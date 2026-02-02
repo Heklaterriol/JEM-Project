@@ -1,0 +1,338 @@
+/**
+ * @package    JEM
+ * @subpackage JEM Banner Module
+ * @copyright  (C) 2013-2026 joomlaeventmanager.net
+ * @copyright  (C) 2005-2009 Christoph Lukes
+ * @license    https://www.gnu.org/licenses/gpl-3.0 GNU/GPL
+ */
+
+.jxtitle {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxtitle::before {
+    content: "Title";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jximg {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jximg::before {
+    content: "Img";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxdate {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxdate::before {
+    content: "Date (relative or absolte according to setting)";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxtext {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxtext::before {
+    content: "Description Text End";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxcolor {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxcolor::before {
+    content: "Color";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxmonth {
+    padding: 1rem !important;
+    margin: 2rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxmonth::before {
+    content: "Month";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+.jxwday {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxwday::before {
+    content: "Week Day";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxday {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxday::before {
+    content: "Day";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxdark {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxdark::before {
+    content: "Font Color in Contrast to BG Color";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+
+.jxtitle {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxtitle::before {
+    content: "Title";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+
+.jxdateinfo {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxdateinfo::before {
+    content: "dateinfo title attribut";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxtime {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxtime::before {
+    content: "Time";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jximage {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jximage::before {
+    content: "Image";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxvenue {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxvenue::before {
+    content: "Venue";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
+
+.jxcategory {
+    padding: 1rem !important;
+    margin: 1.6rem 0 0.6rem;
+    background-color: #eee;
+    border: 1px solid #555;
+    border-radius: 4px;
+    position: relative;
+    padding-top: 1.5rem;
+}
+
+.jxcategory::before {
+    content: "Categories";
+    position: absolute;
+    top: -1.6em;
+    left: 1rem;
+    padding: 0.1rem 0.3rem;
+    font-size: 1rem;
+    font-weight:normal;
+    color: #fff;
+    background:#000;
+}
