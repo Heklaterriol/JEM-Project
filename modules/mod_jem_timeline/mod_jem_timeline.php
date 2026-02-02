@@ -3,7 +3,6 @@
  * @package    JEM
  * @subpackage JEM Timeline Module
  * @copyright  (C) 2013-2026 joomlaeventmanager.net
- * @copyright  (C) 2005-2009 Christoph Lukes
  * @license    https://www.gnu.org/licenses/gpl-3.0 GNU/GPL
  */
 
@@ -24,22 +23,6 @@ require_once(JPATH_SITE.'/components/com_jem/factory.php');
 
 Factory::getApplication()->getLanguage()->load('com_jem', JPATH_SITE.'/components/com_jem');
 
-switch($params->get('color')) {
-    case 'red':
-    case 'blue':
-    case 'green':
-    case 'orange':
-    case 'category':
-    case 'alpha':
-        $color = $params->get('color');
-        break;
-    default:
-        $color = "red";
-        // ensure getList() always gets a valid 'color' setting
-        $params->set('color', $color);
-        break;
-}
-
 $list = ModJemTimelineHelper::getList($params);
 
 // check if any results returned
@@ -50,7 +33,6 @@ if (empty($list) && !$params->get('show_no_events')) {
 
 $jemsettings = JemHelper::config();
 $iconcss = $mod_name . (($jemsettings->useiconfont == 1) ? '_iconfont' : '_iconimg');
-JemHelper::loadModuleStyleSheet($mod_name, $color);
 JemHelper::loadModuleStyleSheet($mod_name, $iconcss);
 
 // load icon font if needed
