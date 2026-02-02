@@ -13,7 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 
-JemHelper::loadModuleStyleSheet('mod_jem_banner', 'mod_jem_banner_timeline_centered');
+JemHelper::loadModuleStyleSheet('mod_jem_timeline', 'mod_jem_timeline_centered');
 
 $app = Factory::getApplication();
 $wa  = $app->getDocument()->getWebAssetManager();
@@ -32,7 +32,20 @@ if ($flyer_link_type == 1) {
     $modal = '';
 }
 
-?>
+$document = Factory::getDocument();
+$timeline_color = $params->get('color', 'rgb(128,128,128)');
+
+$css = '
+.jemmodulebanner .timeline-badge a {
+    background: ' . $timeline_color . ';  
+}
+.jemmodulebanner .timeline-badge a:hover {
+    background: ' . $timeline_color . 'aa;    
+}
+.timeline-center-line {
+    background: ' . $timeline_color . '33;    
+}';  
+$wa->addInlineStyle($css);?>
 
 <div class="jemmodulebanner jem-timeline-centered<?php echo $params->get('moduleclass_sfx'); ?>">
     <div class="timeline-wrapper">
@@ -42,9 +55,9 @@ if ($flyer_link_type == 1) {
         <?php if (!empty($list)) : ?>
             <?php foreach ($list as $i => $item) : ?>
                 <?php
-                    // links / rechts alternierend
+                    // left / right alternating
                     $rowClass = ($i % 2 === 0) ? 'row-left' : 'row-right';
-                    $color    = isset($item->color) ? $item->color : $item->colorclass;
+                    $font_color = !empty($item->color_is_dark) ? 'light' : 'dark';
                 ?>
 
                 <div class="timeline-row <?php echo $rowClass; ?> event_id<?php echo (int) $item->eventid; ?>"
@@ -54,7 +67,7 @@ if ($flyer_link_type == 1) {
 
                     <section class="timeline-card">
 
-                        <span class="timeline-icon" style="--event-color: <?php echo $color; ?>;">
+                        <span class="timeline-icon" style="--event-color: <?php echo $timeline_color; ?>;">
                             <i class="fas fa-calendar-alt"></i>
                         </span>
 
@@ -68,17 +81,19 @@ if ($flyer_link_type == 1) {
                                     <?php echo $item->title; ?>
                                 <?php endif; ?>
                             </span>
-                            <span class="timeline-date">
-                                <?php
-                                    echo $item->startdate['day'] . '. '
-                                       . substr($item->startdate['month'], 0, 3)
-                                       . ' – '
-                                       . ($item->time ?: Text::_('MOD_JEM_BANNER_ALL_DAY'));
-                                ?>
-                            </span>
+                            <div class="timeline-dates">
+                                <span class="timeline-date">
+                                    <?php echo $item->startdatetime; ?>
+                                </span>
+                                <?php if (!empty($item->enddatetime)) : ?>
+                                    <span class="timeline-date timeline-enddate">
+                                        <?php echo $item->enddatetime; ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
                         </div>
                         <?php if (!empty($item->catname)) : ?>
-                            <div class="timeline-badge">
+                            <div class="timeline-badge <?php echo $font_color; ?>">
                                 <?php echo $item->catname; ?>
                             </div>
                         <?php endif;
@@ -95,13 +110,9 @@ if ($flyer_link_type == 1) {
                             </p>
                         <?php endif; ?>
                         <div class="timeline-bottom">
-                            <?php if (!empty($item->link)) :
-                                if ($item->colorclass === "category" || $item->colorclass === "alpha") : ?>
-                                    <a class="timeline-readmore timeline-button-<?php echo !empty($item->color_is_dark) ? 'light' : 'dark'; ?>" style="background-color:<?php echo !empty($item->color) ? $item->color : 'rgb(128,128,128)'; ?>" href="<?php echo $item->link; ?>">
-                                <?php else : ?>
-                                    <a class="timeline-readmore timeline-button-<?php echo !empty($item->color_is_dark) ? 'light' : 'dark'; ?> color-<?php echo $item->colorclass; ?>" style="background-color:<?php echo $item->colorclass; ?>" href="<?php echo $item->link; ?>">
-                                <?php endif; ?>
-                                    <?php echo Text::_('MOD_JEM_BANNER_READMORE'); ?>
+                            <?php if (!empty($item->link)) : ?>
+                                <a class="timeline-readmore timeline-button-<?php echo $font_color; ?>" style="background-color:<?php echo $timeline_color; ?>" href="<?php echo $item->link; ?>">
+                                <?php echo Text::_('MOD_JEM_TIMELINE_READMORE'); ?>
                                 </a>
                             <?php endif; ?>
 
