@@ -19,7 +19,7 @@ use Joomla\CMS\Date\Date;
 BaseDatabaseModel::addIncludePath(JPATH_SITE . '/components/com_jem/models', 'JemModel');
 
 /**
- * Module-Timeline
+ * Module Timeline
  */
 abstract class ModJemTimelineHelper
 {
@@ -36,7 +36,12 @@ abstract class ModJemTimelineHelper
     {
         mb_internal_encoding('UTF-8');
 
-        static $formats  = array('year' => 'Y', 'month' => 'F', 'day' => 'j', 'weekday' => 'l');
+        $formats  = array(
+            'year' => $params->get('year_format', 'Y'), 
+            'month' => $params->get('month_format', 'F'), 
+            'day' => $params->get('day_format', 'j'), 
+            'weekday' => $params->get('weekday_format', 'l')
+        );
         static $defaults = array('year' => '&nbsp;', 'month' => '', 'day' => '?', 'weekday' => '');
 
         $db     = Factory::getContainer()->get('DatabaseDriver');
@@ -84,21 +89,14 @@ abstract class ModJemTimelineHelper
         # count
         $count = min(max($params->get('count', '2'), 1), 100); // range 1..100, default 2
 
-        # shuffle
-        $shuffle = (bool)$params->get('shuffle', 0);
-        if ($shuffle) {
-            $max_count = min(max((int)$params->get('shuffle_count', 20), $count), 100);
-        } else {
-            $max_count = $count;
-        }
-
-        $model->setState('list.limit', $max_count);
+        $model->setState('list.limit', $count);
 
         # create type dependent filter rules
         switch ($type) {
             case 1: # unfinished events
-                $cal_from = " (TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(IFNULL(a.enddates, a.dates), ' ', IFNULL(a.endtimes, '23:59:59'))) > $offset_minutes) ";
-                $cal_to   = $max_minutes ? " (TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(a.dates, ' ', IFNULL(a.times, '00:00:00'))) < $max_minutes) " : '';
+                $cal_from  = " (a.dates IS NULL OR (TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(a.dates,' ',IFNULL(a.times,'00:00:00'))) > $offset_minutes) ";
+                $cal_from .= "  OR (TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(IFNULL(a.enddates,a.dates),' ',IFNULL(a.endtimes,'23:59:59'))) > $offset_minutes)) ";
+                $cal_to = $max_minutes ? " (a.dates IS NULL OR (TIMESTAMPDIFF(MINUTE, NOW(), CONCAT(a.dates,' ',IFNULL(a.times,'00:00:00'))) < $max_minutes)) " : '';
                 break;
 
             case 2: # archived events
@@ -185,16 +183,12 @@ abstract class ModJemTimelineHelper
         ####
         $events = $model->getItems();
 
-        $color = $params->get('color');
-        $fallback_color = $params->get('fallbackcolor', '#EEEEEE');
-        $fallback_color_is_dark = self::_is_dark($fallback_color);
+        $color = $params->get('color', '#EEEEEE');
+        $color_is_dark = self::_is_dark($color);
 
         // Don't shuffle original array to keep ordering of remaining events intact.
         $indices = array_keys($events);
         if (count($events) > $count) {
-            if ($shuffle) {
-                shuffle($indices);
-            }
             array_splice($indices, $count);
         }
 
@@ -240,7 +234,7 @@ abstract class ModJemTimelineHelper
             $lists[$i]->title       = $title;
             $lists[$i]->fulltitle   = $fulltitle;
             $lists[$i]->venue       = htmlspecialchars($row->venue ?? '', ENT_COMPAT, 'UTF-8');
-            $lists[$i]->catname     = implode(", ", JemOutput::getCategoryList($row->categories, $params->get('linkcategory', 1)));
+            $lists[$i]->catname     = implode(Text::_('MOD_JEM_TIMELINE_CAT_SEPARATOR'), JemOutput::getCategoryList($row->categories, $params->get('linkcategory', 1)));
             $lists[$i]->state       = htmlspecialchars($row->state ?? '', ENT_COMPAT, 'UTF-8');
             $lists[$i]->street      = htmlspecialchars($row->street ?? '', ENT_COMPAT, 'UTF-8');
             $lists[$i]->postalCode  = htmlspecialchars($row->postalCode ?? '', ENT_COMPAT, 'UTF-8');
@@ -257,8 +251,13 @@ abstract class ModJemTimelineHelper
              */
             $lists[$i]->startdate   = empty($row->dates)    ? $defaults : self::_format_date_fields($row->dates,    $formats);
             $lists[$i]->enddate     = empty($row->enddates) ? $defaults : self::_format_date_fields($row->enddates, $formats);
+            
+            // fully formated start- and enddate strings
+            $lists[$i]->startdatetime = self::_format_single_datetime($row->dates, $row->times, $dateFormat, $timeFormat, $addSuffix);
+            $lists[$i]->enddatetime   = self::_format_single_datetime($row->enddates, $row->endtimes, $dateFormat, $timeFormat, $addSuffix);
+            
             list($lists[$i]->date,
-                $lists[$i]->time)  = self::_format_date_time($row, $params->get('datemethod', 1), $dateFormat, $timeFormat, $addSuffix);
+                $lists[$i]->time)   = self::_format_date_time($row, $params->get('datemethod', 1), $dateFormat, $timeFormat, $addSuffix);
             $lists[$i]->dateinfo    = JemOutput::formatDateTime($row->dates, $row->times, $row->enddates, $row->endtimes, $dateFormat, $timeFormat, $addSuffix);
             $lists[$i]->dateschema  = JEMOutput::formatSchemaOrgDateTime($row->dates, $row->times, $row->enddates, $row->endtimes, $showTime = true);
 
@@ -299,27 +298,8 @@ abstract class ModJemTimelineHelper
 
             $lists[$i]->readmore = mb_strlen(trim($row->fulltext));
 
-            $lists[$i]->colorclass = $color;
-            if (($color == 'alpha') || (($color == 'category') && empty($row->categories))) {
-                $lists[$i]->color = $fallback_color;
-                $lists[$i]->color_is_dark = $fallback_color_is_dark;
-            }
-            elseif (($color == 'category') && !empty($row->categories)) {
-                $colors = array();
-                foreach ($row->categories as $category) {
-                    if (!empty($category->color)) {
-                        $colors[$category->color] = $category->color;
-                    }
-                }
-
-                if (count($colors) == 1) {
-                    $lists[$i]->color =  array_pop($colors);
-                    $lists[$i]->color_is_dark = self::_is_dark($lists[$i]->color);
-                } else {
-                    $lists[$i]->color =  $fallback_color;
-                    $lists[$i]->color_is_dark = $fallback_color_is_dark;
-                }
-            }
+            $lists[$i]->color = $color;
+            $lists[$i]->color_is_dark = $color_is_dark;
 
             # provide custom fields
             for ($n = 1; $n <= 10; ++$n) {
@@ -549,6 +529,38 @@ abstract class ModJemTimelineHelper
         $time .= empty($endtimes) ? '' : ('&nbsp;-&nbsp;' . JemOutput::formattime($row->endtimes, $timeFormat, $addSuffix));
 
         return array($date, $time);
+    }
+
+
+    /**
+     * Method to format a single date and time as complete string
+     * 
+     * @access protected
+     * 
+     * @param  string  $date        Date in form 'yyyy-mm-dd' or empty
+     * @param  string  $time        Time in form 'hh:mm:ss' or empty
+     * @param  string  $dateFormat  Format string for date (optional)
+     * @param  string  $timeFormat  Format string for time (optional)
+     * @param  bool    $addSuffix   Show or hide time suffix, e.g. 'h' (optional)
+     * 
+     * @return string  Formatted date and time string (e.g. "03. Feb 2026, 16:30")
+     */
+    protected static function _format_single_datetime($date, $time, $dateFormat = '', $timeFormat = '', $addSuffix = false)
+    {
+        if (empty($date)) {
+            return '';
+        }
+
+        $result = JemOutput::formatdate($date, $dateFormat);
+        
+        if (!empty($time)) {
+            $formattedTime = JemOutput::formattime($time, $timeFormat, $addSuffix);
+            if (!empty($formattedTime)) {
+                $result .= ', ' . $formattedTime;
+            }
+        }
+
+        return $result;
     }
 
     /**
