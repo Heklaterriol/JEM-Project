@@ -1,0 +1,185 @@
+:root {
+		--font-family-first: 'Roboto Mono', monospace;
+		
+		--color-first: #E63946;
+		--color-second: #1D3557;
+		--color-third: #F1FAEE;
+		--color-fourth: #CEB02A;
+		--color-black: #000;
+}
+
+* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+}
+
+body {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: 100vh;
+
+		font-family: var(--font-family-first);
+
+		background-color: var(--color-second);
+}
+
+button {
+    font-family: inherit;
+
+    border: none;
+    cursor: pointer;
+}
+
+.main-title {
+		margin-bottom: 30px;
+	
+		font-size: 45px;
+    font-weight: bold;
+    color: var(--color-third);
+}
+
+.main-title.-second { color: var(--color-first); }
+
+.main-carousel {
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-left: 80px;
+    padding-right: 80px;
+    margin-bottom: 55px;
+}
+
+.main-carousel::after {
+    position: absolute;
+    left: 50px;
+    top: 52px;
+
+    display: block;
+    width: calc(100% - 100px); 
+    height: 6px;
+
+    content: '';
+    background-color: #000;
+}
+
+.main-carousel::before {
+    position: absolute;
+    left: 0;
+    top: 52px;
+
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+
+    content: '';
+    border: 3px dashed var(--color-black);
+}
+
+.button-arrow {
+		position: absolute;
+    bottom: 50px; /* 75px - 25px */
+	
+    width: 50px;
+    height: 50px;
+
+    background-color: var(--color-first);
+    box-shadow: 5px 5px 0px var(--color-black);
+    
+    transition: transform 300ms cubic-bezier(.42,0,.66,2.35);
+}
+
+.button-arrow:hover { transform: scale(1.08); }
+
+/* Create the arrow. */
+.button-arrow::before {
+    display: block;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+
+    content: '';
+    border: 18px solid transparent;
+}
+
+/* The right (>) arrow. */
+.button-arrow.-right::before { 
+    border-left: 30px solid var(--color-third);
+
+    transform: translateX(12px);
+}
+
+/* The left (<) arrow. */
+.button-arrow.-left::before { 
+    border-right: 30px solid var(--color-third);
+
+    transform: translateX(-12px);
+}
+
+.button-arrow.-right { right: 15px; }
+
+.button-arrow.-left { 
+    left: 15px; 
+    
+    box-shadow: -5px 5px 0px var(--color-black);
+}
+
+/* Hide the content for acessibility. */
+.button-arrow .content { display: none; }
+
+.main-carousel .items {
+    width: 100%;
+    overflow: hidden;
+}
+
+.main-carousel .cards {
+    display: flex;
+    justify-content: space-between;
+
+    transition: transform 300ms ease-in-out;
+}
+
+.node-card {
+    position: relative;
+
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.node-card::before {
+    position: absolute;
+    bottom: 140px;
+
+    width: 40px;
+    height: 0;
+    box-sizing: border-box;
+
+    content: '';
+    border: 2px dashed var(--color-black);
+
+    transform: rotate(90deg) translateX(-50%);
+}
+
+.node-card .main-title { margin-bottom: 50px; }
+
+.node-card .logo {
+    display: flex;
+    align-items: center;
+    padding-left: 15px;
+    padding-right: 15px;
+    height: 140px;
+
+    background-color: var(--color-fourth);
+    border: 5px solid var(--color-black);
+}
+
+.logo.-no-padding { padding: 0; }
+
+.logo.-no-padding .image { height: 130px; }
+
+.logo.-bg-red { background-color: var(--color-first); }

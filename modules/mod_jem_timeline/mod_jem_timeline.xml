@@ -59,20 +59,6 @@
                     label="MOD_JEM_TIMELINE_OFFSET_HOURS"
                     description="MOD_JEM_TIMELINE_OFFSET_HOURS_DESC"
                 />
-                <field name="shuffle" type="radio"
-                    default="0"
-                    label="MOD_JEM_TIMELINE_SHUFFLE"
-                    description="MOD_JEM_TIMELINE_SHUFFLE_DESC"
-                    class="btn-group btn-group-yesno"
-                >
-                    <option value="1">JYES</option>
-                    <option value="0">JNO</option>
-                </field>
-                <field name="shuffle_count" type="text"
-                    default=""
-                    label="MOD_JEM_TIMELINE_SHUFFLE_COUNT"
-                    description="MOD_JEM_TIMELINE_SHUFFLE_COUNT_DESC"
-                />
                 <field name="cuttitle" type="text"
                     default="25"
                     label="MOD_JEM_TIMELINE_MAX_TITLE_LENGTH"
@@ -97,24 +83,12 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field name="color" type="list"
-                    default="1"
-                    label="MOD_JEM_TIMELINE_COLOR"
-                    description="MOD_JEM_TIMELINE_COLOR_DESC"
-                >
-                    <option value="red">MOD_JEM_TIMELINE_RED</option>
-                    <option value="blue">MOD_JEM_TIMELINE_BLUE</option>
-                    <option value="green">MOD_JEM_TIMELINE_GREEN</option>
-                    <option value="orange">MOD_JEM_TIMELINE_ORANGE</option>
-                    <option value="category">MOD_JEM_TIMELINE_CATEGORY</option>
-                    <option value="alpha">MOD_JEM_TIMELINE_USER</option>
-                </field>
-                <field name="fallbackcolor" type="color"
+                <field name="color" type="color"
                     class="inputbox"
                     default="#EEEEEE"
                     size="8"
-                    label="MOD_JEM_TIMELINE_FALLBACK_COLOR"
-                    description="MOD_JEM_TIMELINE_FALLBACK_COLOR_DESC"
+                    label="MOD_JEM_TIMELINE_COLOR"
+                    description="MOD_JEM_TIMELINE_COLOR_DESC"
                 />
                 <field name="imagewidthmax" type="text"
                        class="inputbox"
@@ -194,6 +168,54 @@
                     label="MOD_JEM_TIMELINE_TIME_FORMAT"
                     description="MOD_JEM_TIMELINE_TIME_FORMAT_DESC"
                 />
+
+                <field
+                    name="year_format"
+                    type="list"
+                    label="MOD_JEM_TIMELINE_YEAR_FORMAT_LABEL"
+                    description="MOD_JEM_TIMELINE_YEAR_FORMAT_DESC"
+                    default="Y"
+                >
+                    <option value="Y">MOD_JEM_TIMELINE_YEAR_FORMAT_FULL</option>
+                    <option value="y">MOD_JEM_TIMELINE_YEAR_FORMAT_SHORT</option>
+                </field>
+
+                <field
+                    name="month_format"
+                    type="list"
+                    label="MOD_JEM_TIMELINE_MONTH_FORMAT_LABEL"
+                    description="MOD_JEM_TIMELINE_MONTH_FORMAT_DESC"
+                    default="F"
+                >
+                    <option value="F">MOD_JEM_TIMELINE_MONTH_FORMAT_FULL</option>
+                    <option value="M">MOD_JEM_TIMELINE_MONTH_FORMAT_SHORT</option>
+                    <option value="m">MOD_JEM_TIMELINE_MONTH_FORMAT_NUMERIC_ZERO</option>
+                    <option value="n">MOD_JEM_TIMELINE_MONTH_FORMAT_NUMERIC</option>
+                </field>
+
+                <field
+                    name="day_format"
+                    type="list"
+                    label="MOD_JEM_TIMELINE_DAY_FORMAT_LABEL"
+                    description="MOD_JEM_TIMELINE_DAY_FORMAT_DESC"
+                    default="j"
+                >
+                    <option value="j">MOD_JEM_TIMELINE_DAY_FORMAT_NO_ZERO</option>
+                    <option value="d">MOD_JEM_TIMELINE_DAY_FORMAT_WITH_ZERO</option>
+                    <option value="S">MOD_JEM_TIMELINE_DAY_FORMAT_ORDINAL</option>
+                </field>
+
+                <field
+                    name="weekday_format"
+                    type="list"
+                    label="MOD_JEM_TIMELINE_WEEKDAY_FORMAT_LABEL"
+                    description="MOD_JEM_TIMELINE_WEEKDAY_FORMAT_DESC"
+                    default="l"
+                >
+                    <option value="l">MOD_JEM_TIMELINE_WEEKDAY_FORMAT_FULL</option>
+                    <option value="D">MOD_JEM_TIMELINE_WEEKDAY_FORMAT_SHORT</option>
+                </field>
+
                 <field name="showcategory" type="radio"
                     default="0"
                     label="MOD_JEM_TIMELINE_SHOWCATEGORY"

@@ -10,7 +10,6 @@
 /* CSS Custom Properties für wiederkehrende Werte */
 :root {
   --color-primary: #ff0;
-  --color-bg-dark: #000;
   --color-bg-card: #282828;
   --color-bg-date: #1d1d1b;
   --color-text-light: #fff;
@@ -28,7 +27,6 @@
 }
 /* Base Styles */
 body {
-  background-color: var(--color-bg-dark);
   overflow-x: hidden;
 }
 img {
