@@ -35,10 +35,10 @@ $document = Factory::getDocument();
 $timeline_color = $params->get('color', 'rgb(128,128,128)');
 
 $css = '
-.jemmodulebanner .timeline-badge a {
+.jemmoduletimeline .timeline-badge a {
     background: ' . $timeline_color . ';  
 }
-.jemmodulebanner .timeline-badge a:hover {
+.jemmoduletimeline .timeline-badge a:hover {
     background: ' . $timeline_color . 'aa;    
 }
 .timeline-center-line {
@@ -46,7 +46,7 @@ $css = '
 }';  
 $wa->addInlineStyle($css);?>
 
-<div class="jemmodulebanner jem-timeline-centered<?php echo $params->get('moduleclass_sfx'); ?>">
+<div class="jemmoduletimeline jem-timeline-centered<?php echo $params->get('moduleclass_sfx'); ?>">
     <div class="timeline-wrapper">
 
         <div class="timeline-center-line"></div>

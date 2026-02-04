@@ -42,7 +42,7 @@ $css = '
 $wa->addInlineStyle($css);
 ?>
 
-<div class="jemmodulebanner<?php echo $params->get('moduleclass_sfx')?>" id="jemmodulebanner">
+<div class="jemmoduletimeline<?php echo $params->get('moduleclass_sfx')?>" id="jemmoduletimeline">
     <div class="eventset">
         <?php $i = count($list); ?>
         <?php if ($i > 0) : ?>

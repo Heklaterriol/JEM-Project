@@ -189,13 +189,13 @@
     color: var(--joomla-text-muted-color, #6c757d);
 }
 
-.jemmodulebanner .timeline-badge {
+.jemmoduletimeline .timeline-badge {
     border-radius: 4px;
     font-size: 0.75rem;
     font-weight: 600;
 }
 
-.jemmodulebanner .timeline-badge a {
+.jemmoduletimeline .timeline-badge a {
     display: inline-block;
     text-decoration: none;
     padding: 6px 12px;
@@ -203,11 +203,11 @@
     font-weight: 600;
     border: 1px solid #d0e3ff;
 }
-.jemmodulebanner .timeline-badge.light a {
+.jemmoduletimeline .timeline-badge.light a {
     color: #fff;
 }
 
-.jemmodulebanner .timeline-badge.dark a {
+.jemmoduletimeline .timeline-badge.dark a {
     color: #000;
 }
 /* Responsive */
