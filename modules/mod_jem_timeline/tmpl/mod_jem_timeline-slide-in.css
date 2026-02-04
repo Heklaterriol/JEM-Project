@@ -1,8 +1,7 @@
 /**
  * @package    JEM
- * @subpackage JEM Banner Module
+ * @subpackage JEM Timeline Module
  * @copyright  (C) 2013-2026 joomlaeventmanager.net
- * @copyright  (C) 2005-2009 Christoph Lukes
  * @license    https://www.gnu.org/licenses/gpl-3.0 GNU/GPL
  */
 
@@ -22,16 +21,17 @@
   --color-line: #393935;
   --timeline-line-width: 2px;
   --timeline-gap: 50px;
-  --card-border-radius: 12px;
   --arrow-size: 18px;
 }
 /* Base Styles */
 body {
   overflow-x: hidden;
 }
-img {
+img.timeline-image {
   max-width: 100%;
   height: auto;
+  margin: 0 auto;
+  display: block;
 }
 /* Container */
 .jem-format-container {
@@ -50,15 +50,6 @@ img {
 .jem-timeline_tagline {
   font-size: clamp(28px, 5vw, 40px);
   color: var(--color-text-muted);
-}
-.jem-timeline_title {
-  background: url(https://raw.githubusercontent.com/SochavaAG/example-mycode/master/pens/timeline/images/bg.jpg) 
-              no-repeat 50% 50% / cover;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  font-size: clamp(48px, 8vw, 80px);
 }
 /* Timeline Items */
 .jem-timeline {
@@ -148,7 +139,6 @@ img {
   width: 45%;
   margin: -77px 0 0;
   background-color: #282828;
-  border-radius: var(--card-border-radius);
   opacity: 0;
   position: relative;
   transition: transform 0.5s, 
@@ -160,9 +150,6 @@ img {
 .jem-timeline_item:nth-child(even) .jem-timeline-card_item {
   transform: translateX(200%);
 }
-.jem-timeline-card_img-box img {
-  border-radius: var(--card-border-radius) var(--card-border-radius) 0 0;
-}
 /* Card Arrow */
 .jem-timeline-card_arrow {
   width: 18px;
@@ -173,10 +160,6 @@ img {
   transform: rotate(45deg);
   z-index: -1;
 }
-.jem-timeline-card_img-box {
-  border-radius: 60px;
-}
-
 .jem-timeline_item:nth-child(even) .jem-timeline-card_arrow {
   right: auto;
   left: -9px;
@@ -203,6 +186,12 @@ img {
   font-family: 'PT Sans Narrow', sans-serif;
   flex: 1;
   text-align: left;
+}
+.jem-timeline-card_title a {
+  text-decoration: none;
+}
+.jem-timeline-card_title a:hover {
+  color: color-mix(in oklch, currentColor 90%, white);
 }
 .jem-timeline-card_date-text {
   font-size: clamp(14px, 2vw, 18px);

@@ -1,9 +1,8 @@
 <?php
 /**
  * @package    JEM
- * @subpackage JEM Banner Module
+ * @subpackage JEM Timeline Module
  * @copyright  (C) 2013-2026 joomlaeventmanager.net
- * @copyright  (C) 2005-2009 Christoph Lukes
  * @license    https://www.gnu.org/licenses/gpl-3.0 GNU/GPL
  */
 
@@ -52,11 +51,12 @@ $css = '
 .jem-timeline-card_title-box-title,
 .jem-timeline-card_title,
 .jem-timeline-card_date-text,
-.jem-timeline-card_categories {
+.jem-timeline-card_categories,
+.jem-timeline-card_title a {
   color: ' . $timeline_color . ';
   }
   .jem-timeline-card_item {
-  box-shadow: 0 0 0 2px ' . $timeline_color . ';
+  box-shadow: 0 0 1px 1px ' . $timeline_color . ';
   }';    
 $wa->addInlineStyle($css);
 ?>
@@ -100,13 +100,15 @@ $wa->addInlineStyle($css);
             </div>
             <div class="jem-timeline-card_item">
             	<div class="jem-timeline-card_inner">
+            	  <?php if (($showflyer == 1) && !empty($item->eventimage)) : ?>
                 	<div class="jem-timeline-card_img-box">
 							<?php if ($flyer_link_type != 3) : ?>
 								<a href="<?php echo ($flyer_link_type == 2) ? $item->eventlink : $item->eventimageorig; ?>" rel="<?php echo $modal;?>" class="banner-flyerimage" <?php if ($flyer_link_type == 0) echo 'target="_blank" '; ?> title="<?php echo ($flyer_link_type == 2) ? $item->fulltitle : Text::_('COM_JEM_CLICK_TO_ENLARGE'); ?>" data-title="<?php echo $item->title; ?>">
 							<?php endif; ?>
-							<img class="float_right <?php echo 'image-preview2'; ?>" src="<?php echo $item->eventimageorig; ?>" alt="<?php echo $item->title; ?>" itemprop="image" />
+							<img class="timeline-image <?php echo 'image-preview2'; ?>" src="<?php echo $item->eventimageorig; ?>" alt="<?php echo $item->title; ?>" itemprop="image" />
 							<?php if ($flyer_link_type != 3) { echo '</a>'; } ?>
                 		</div>
+                		<?php endif; ?>
                 		<div class="jem-timeline-card_info">
                   <div class="jem-timeline-card_header">
                     <div class="jem-timeline-card_title">
