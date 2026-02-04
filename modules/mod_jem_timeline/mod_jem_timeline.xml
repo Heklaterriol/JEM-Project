@@ -19,6 +19,7 @@
         <filename>index.html</filename>
         <folder>tmpl</folder>
         <folder>language</folder>
+        <folder>media</folder>
     </files>
     <help key="Modules" />
     <config>
@@ -85,7 +86,7 @@
                 </field>
                 <field name="color" type="color"
                     class="inputbox"
-                    default="#EEEEEE"
+                    default="ffa500"
                     size="8"
                     label="MOD_JEM_TIMELINE_COLOR"
                     description="MOD_JEM_TIMELINE_COLOR_DESC"
@@ -185,7 +186,7 @@
                     type="list"
                     label="MOD_JEM_TIMELINE_MONTH_FORMAT_LABEL"
                     description="MOD_JEM_TIMELINE_MONTH_FORMAT_DESC"
-                    default="F"
+                    default="m"
                 >
                     <option value="F">MOD_JEM_TIMELINE_MONTH_FORMAT_FULL</option>
                     <option value="M">MOD_JEM_TIMELINE_MONTH_FORMAT_SHORT</option>
@@ -198,7 +199,7 @@
                     type="list"
                     label="MOD_JEM_TIMELINE_DAY_FORMAT_LABEL"
                     description="MOD_JEM_TIMELINE_DAY_FORMAT_DESC"
-                    default="j"
+                    default="d"
                 >
                     <option value="j">MOD_JEM_TIMELINE_DAY_FORMAT_NO_ZERO</option>
                     <option value="d">MOD_JEM_TIMELINE_DAY_FORMAT_WITH_ZERO</option>
@@ -210,7 +211,7 @@
                     type="list"
                     label="MOD_JEM_TIMELINE_WEEKDAY_FORMAT_LABEL"
                     description="MOD_JEM_TIMELINE_WEEKDAY_FORMAT_DESC"
-                    default="l"
+                    default="D"
                 >
                     <option value="l">MOD_JEM_TIMELINE_WEEKDAY_FORMAT_FULL</option>
                     <option value="D">MOD_JEM_TIMELINE_WEEKDAY_FORMAT_SHORT</option>
