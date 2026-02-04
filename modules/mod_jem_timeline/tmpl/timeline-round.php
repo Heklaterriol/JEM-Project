@@ -8,17 +8,17 @@
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 
-JemHelper::loadModuleStyleSheet('mod_jem_timeline', 'mod_jem_timeline_round');
+JemHelper::loadModuleStyleSheet('mod_jem_timeline', 'mod_jem_timeline-round');
 
 $app = Factory::getApplication();
 $wa  = $app->getDocument()->getWebAssetManager();
 
-$datemethod      = (int)$params->get('datemethod', 1);
-$showflyer = (int) $params->get('showflyer', 1);
+$showflyer       = (int)$params->get('showflyer', 1);
 $showdesc  = (int) $params->get('showdesc', 1);
 $flyer_link_type = (int)$params->get('flyer_link_type', 0);
 
@@ -32,105 +32,133 @@ if ($flyer_link_type == 1) {
 }
 
 $document = Factory::getDocument();
-$timeline_color = $params->get('color', 'rgb(128,128,128)');
-
+$timeline_color = $params->get('color', 'rgba(201,197,195,1)');
 $css = '
-.jemmoduletimeline .timeline-badge a {
-    background: ' . $timeline_color . ';  
+.main-timeline:before,
+.main-timeline .timeline-content:before {
+  background: ' . $timeline_color . ';
 }
-.jemmoduletimeline .timeline-badge a:hover {
-    background: ' . $timeline_color . 'aa;    
+.main-timeline .timeline:first-child:before,
+.main-timeline .timeline:last-child:before
+.main-timeline .timeline:last-child:nth-child(even):before,
+.main-timeline .icon,
+.main-timeline .title a:hover,
+.main-timeline .circle {
+  border: 3px solid ' . $timeline_color . ';
 }
-.timeline-center-line {
-    background: ' . $timeline_color . '33;    
-}';  
-$wa->addInlineStyle($css);?>
+.main-timeline .title a {
+  background: oklch(from ' . $timeline_color . ' min(l, 0.75) c h);
+  border: 3px oklch(from ' . $timeline_color . ' min(l, 0.75) c h) solid;
+}
+.main-timeline .title a:hover {
+  border: 3px ' . $timeline_color . ' solid;
+  color: oklch(from ' . $timeline_color . ' min(l, 0.75) c h);
+}
+.main-timeline .date,
+.main-timeline .description.category a,
+.main-timeline .description.venue a {
+  color: oklch(from ' . $timeline_color . ' min(l, 0.75) c h);
+  text-decoration: none;
+}';
 
-<div class="jemmoduletimeline jem-timeline-centered<?php echo $params->get('moduleclass_sfx'); ?>">
-    <div class="timeline-wrapper">
+$wa->addInlineStyle($css);
+?>
 
-        <div class="timeline-center-line"></div>
+<section>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="main-timeline">
 
-        <?php if (!empty($list)) : ?>
-            <?php foreach ($list as $i => $item) : ?>
-                <?php
-                    // left / right alternating
-                    $rowClass = ($i % 2 === 0) ? 'row-left' : 'row-right';
-                    $font_color = !empty($item->color_is_dark) ? 'light' : 'dark';
-                ?>
-
-                <div class="timeline-row <?php echo $rowClass; ?> event_id<?php echo (int) $item->eventid; ?>"
-                     itemprop="event"
-                     itemscope
-                     itemtype="https://schema.org/Event">
-
-                    <section class="timeline-card">
-
-                        <span class="timeline-icon" style="--event-color: <?php echo $timeline_color; ?>;">
-                            <i class="fas fa-calendar-alt"></i>
-                        </span>
-
-                        <div class="timeline-details">
-                            <span class="timeline-title">
-                                <?php if (!empty($item->eventlink)) : ?>
-                                    <a href="<?php echo $item->eventlink; ?>">
-                                        <?php echo $item->title; ?>
-                                    </a>
+                <?php $itemCount = count($list); ?>
+                <?php if ($itemCount > 0) : ?>
+                <?php foreach ($list as $item) : ?>
+                
+                <div class="timeline event_id<?php echo $item->eventid; ?>" itemprop="event" itemscope itemtype="https://schema.org/Event">
+                    <div class="timeline-content">
+                        <div class="circle">
+                            <span class="homebox">
+                                <?php if ($showflyer && $item->eventimageorig) : ?>
+                                    <?php if ($flyer_link_type != 3) : ?>
+                                        <a href="<?php echo ($flyer_link_type == 2) ? $item->eventlink : $item->eventimageorig; ?>" rel="<?php echo $modal;?>" <?php if ($flyer_link_type == 0) echo 'target="_blank" '; ?> title="<?php echo ($flyer_link_type == 2) ? $item->fulltitle : Text::_('COM_JEM_CLICK_TO_ENLARGE'); ?>" data-title="<?php echo $item->title; ?>">
+                                    <?php endif; ?>
+                                    <img src="<?php echo $item->eventimageorig; ?>" alt="<?php echo $item->title; ?>" class="img" itemprop="image" />
+                                    <?php if ($flyer_link_type != 3) { echo '</a>'; } ?>
+                                <?php else : ?>
+                                    <img src="<?php echo Uri::base(true); ?>/media/com_jem/images/blank.png" alt="<?php echo $item->title; ?>" class="img" />
+                                <?php endif; ?>
+                            </span>
+                        </div>
+                        <div class="content">
+                            <h2 class="title">
+                                <?php if ($item->eventlink) : ?>
+                                    <a href="<?php echo $item->eventlink; ?>" title="<?php echo $item->fulltitle; ?>" itemprop="url"><?php echo $item->title; ?></a>
                                 <?php else : ?>
                                     <?php echo $item->title; ?>
                                 <?php endif; ?>
-                            </span>
-                            <div class="timeline-dates">
-                                <span class="timeline-date">
+                            </h2>
+                            
+                            <h3 class="date" title="<?php echo strip_tags($item->dateinfo); ?>">
+                                <?php if (!empty($item->startdatetime)) : ?>
                                     <?php echo $item->startdatetime; ?>
-                                </span>
-                                <?php if (!empty($item->enddatetime)) : ?>
-                                    <span class="timeline-date timeline-enddate">
-                                        <?php echo $item->enddatetime; ?>
-                                    </span>
+                                    <?php if (!empty($item->enddatetime) && $item->enddatetime != $item->startdatetime) : ?>
+                                        &nbsp;–&nbsp;<?php echo $item->enddatetime; ?>
+                                    <?php endif; ?>
+                                <?php else : ?>
+                                    <?php echo $item->date; ?>
+                                    <?php if ($item->time) : ?>
+                                        <span class="time">, <?php echo $item->time; ?></span>
+                                    <?php endif; ?>
                                 <?php endif; ?>
-                            </div>
-                        </div>
-                        <?php if (!empty($item->catname)) : ?>
-                            <div class="timeline-badge <?php echo $font_color; ?>">
-                                <?php echo $item->catname; ?>
-                            </div>
-                        <?php endif;
-                        if ($showflyer && !empty($item->eventimageorig)) : ?>
-                            <div class="timeline-image">
-                                <img src="<?php echo $item->eventimageorig; ?>"
-                                     alt="<?php echo htmlspecialchars($item->title, ENT_QUOTES); ?>">
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if ($showdesc && !empty($item->eventdescription)) : ?>
-                            <p class="timeline-description">
-                                <?php echo strip_tags(substr($item->eventdescription, 0, 160)); ?>…
+                            </h3>
+                            
+                            <?php if ($params->get('showdesc', 1) == 1) : ?>
+                            <p class="description">
+                                <?php echo $item->eventdescription; ?>
+                                <?php if (isset($item->link) && $item->readmore != 0 && $params->get('readmore')) : ?>
+                                    <br><a class="readmore" href="<?php echo $item->link; ?>"><?php echo $item->linkText; ?></a>
+                                <?php endif; ?>
                             </p>
-                        <?php endif; ?>
-                        <div class="timeline-bottom">
-                            <?php if (!empty($item->link)) : ?>
-                                <a class="timeline-readmore timeline-button-<?php echo $font_color; ?>" style="background-color:<?php echo $timeline_color; ?>" href="<?php echo $item->link; ?>">
-                                <?php echo Text::_('MOD_JEM_TIMELINE_READMORE'); ?>
-                                </a>
                             <?php endif; ?>
-
-                            <?php if (!empty($item->venue)) : ?>
-                                <span class="timeline-venue">
+                            
+                            <?php if (($params->get('showcategory', 1) == 1) && !empty($item->catname)) : ?>
+                            <p class="description category">
+                                <strong><?php echo Text::_('COM_JEM_CATEGORY'); ?>:</strong> <?php echo $item->catname; ?>
+                            </p>
+                            <?php endif; ?>
+                            
+                            <?php if (($params->get('showvenue', 0) == 1) && !empty($item->venue)) : ?>
+                            <p class="description venue">
+                                <strong><?php echo Text::_('COM_JEM_VENUE'); ?>:</strong> 
+                                <?php if ($item->venuelink) : ?>
+                                    <a href="<?php echo $item->venuelink; ?>"><?php echo $item->venue; ?></a>
+                                <?php else : ?>
                                     <?php echo $item->venue; ?>
-                                </span>
+                                <?php endif; ?>
+                                <?php if (!empty($item->city)) : ?>
+                                    , <?php echo $item->city; ?>
+                                <?php endif; ?>
+                            </p>
                             <?php endif; ?>
+                            
+                            <div class="icon"><span></span></div>
                         </div>
-
-                    </section>
+                    </div>
                 </div>
 
-            <?php endforeach; ?>
-        <?php else : ?>
-            <div class="jem-no-events">
-                <?php echo Text::_('MOD_JEM_BANNER_NO_EVENTS'); ?>
-            </div>
-        <?php endif; ?>
+                <?php endforeach; ?>
+                <?php else : ?>
+                <div class="timeline">
+                    <div class="timeline-content">
+                        <div class="content">
+                            <p class="description"><?php echo Text::_('MOD_JEM_TIMELINE_NO_EVENTS'); ?></p>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
 
+            </div>
+        </div>
     </div>
 </div>
+</section>
