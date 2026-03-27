@@ -56,7 +56,7 @@ class JemModelHousekeeping extends BaseDatabaseModel
     public function delete($type)
     {
         // Set FTP credentials, if given
-        jimport('joomla.client.helper');
+        // jimport('joomla.client.helper');
         ClientHelper::setCredentialsFromRequest('ftp');
 
         // Get some data from the request

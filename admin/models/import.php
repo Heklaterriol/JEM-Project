@@ -17,7 +17,7 @@ use Joomla\Filesystem\File;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Log\Log;
 
-jimport('joomla.application.component.model');
+// jimport('joomla.application.component.model');
 
 /**
  * JEM Component Import Model
@@ -975,8 +975,8 @@ class JemModelImport extends BaseDatabaseModel
      */
     public function copyAttachments()
     {
-        jimport('joomla.filesystem.file');
-        jimport('joomla.filesystem.folder');
+        // jimport('joomla.filesystem.file');
+        // jimport('joomla.filesystem.folder');
 
         $jemsettings = JemHelper::config();
 
