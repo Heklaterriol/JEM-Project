@@ -331,7 +331,7 @@ class JemModelAttendees extends BaseDatabaseModel
             $this->_db->setQuery($query);
 
             if ($this->_db->execute() === false) {
-                throw new Exception($this->_db->getErrorMsg(), 1001);
+                throw new \RuntimeException(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 500);
             }
 
             // clear attendees cache

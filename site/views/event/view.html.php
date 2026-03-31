@@ -15,6 +15,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Categories\Categories;
 
 /**
  * Event-View
@@ -493,7 +494,7 @@ class JemViewEvent extends JemView
                     $title = $this->item->title;
                 }
                 $path = array(array('title' => $this->item->title, 'link' => ''));
-                $category = JCategories::getInstance('JEM2')->get($this->item->catid);
+                $category = Categories::getInstance('JEM2')->get($this->item->catid);
                 while ($category && ($menu->query['option'] != 'com_jem' || $menu->query['view'] == 'event'
                         || $id != $category->id) && $category->id > 1) {
                     $path[] = array('title' => $category->catname, 'link' => JemHelperRoute::getCategoryRoute($category->id));

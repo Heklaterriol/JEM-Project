@@ -189,7 +189,7 @@ class JemModelEvent extends ItemModel
                 # Get the item
                 //$query->group('a.id');
 
-                // if ($error = $db->getErrorMsg()) {
+                // if ($error = Text::_('JERROR_AN_ERROR_HAS_OCCURRED')) {
                 //     throw new Exception($error);
                 // }
                 try
@@ -472,7 +472,7 @@ class JemModelEvent extends ItemModel
 
             try {
                 if ($db->execute() === false) {
-                    $this->setError($db->getErrorMsg());
+                    $this->setError(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'));
                     return false;
                 }
             }
@@ -1046,8 +1046,10 @@ class JemModelEvent extends ItemModel
         $query = 'DELETE FROM #__jem_register WHERE event = ' . $event . ' AND uid= ' . $userid;
         $this->_db->SetQuery($query);
 
-        if ($this->_db->execute() === false) {
-            throw new Exception($this->_db->getErrorMsg(), 500);
+        try {
+            $this->_db->execute();
+        } catch (\RuntimeException $e) {
+            throw new \RuntimeException($e->getMessage(), 500);
         }
 
         return true;

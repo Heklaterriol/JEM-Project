@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Object\CMSObject;
+use Joomla\Registry\Registry;
 use Joomla\CMS\HTML\Helpers\Sidebar;
 
 require_once(JPATH_SITE.'/components/com_jem/factory.php');
@@ -131,12 +131,12 @@ class JemHelperBackend
      *
      * @param    int        The category ID.
      *
-     * @return    CMSObject
+     * @return    Registry
      */
     public static function getActions($categoryId = 0)
     {
         $user    = JemFactory::getUser();
-        $result    = new CMSObject;;
+        $result    = new Registry;
 
         if (empty($categoryId)) {
             $assetName = 'com_jem';

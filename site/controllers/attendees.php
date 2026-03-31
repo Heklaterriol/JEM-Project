@@ -14,8 +14,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Session\Session;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 /**
  * JEM Component Attendees Controller
@@ -48,7 +48,7 @@ class JemControllerAttendees extends BaseController
     public function attendeeadd()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $app     = Factory::getApplication();
         $input  = $app->getInput();
@@ -160,8 +160,8 @@ class JemControllerAttendees extends BaseController
                     }
                 }
 
-                $cache = Factory::getCache('com_jem');
-                $cache->clean();
+                Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+                    ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
 
                 $msg = ($total - $skip - $error - $changed) . ' ' . Text::_('COM_JEM_REGISTERED_USERS_ADDED') . ' [ID: ' . $row->id . ']';
                 if ($changed > 0) {
@@ -183,7 +183,7 @@ class JemControllerAttendees extends BaseController
     public function attendeeremove()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $input = Factory::getApplication()->input;
         $cid    = $input->get('cid', array(), 'array');
@@ -217,8 +217,8 @@ class JemControllerAttendees extends BaseController
             echo "<script> alert('".$modelAttendeeList->getError()."'); window.history.go(-1); </script>\n";
         }
 
-        $cache = Factory::getCache('com_jem');
-        $cache->clean();
+        Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+            ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
 
         $msg = $total.' '.Text::_('COM_JEM_REGISTERED_USERS_DELETED');
 
@@ -233,7 +233,7 @@ class JemControllerAttendees extends BaseController
     public function attendeetoggle()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $input = Factory::getApplication()->input;
         $id     = $input->getInt('id', 0);
@@ -276,7 +276,7 @@ class JemControllerAttendees extends BaseController
     public function export()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $app       = Factory::getApplication();
         $params    = $app->getParams();

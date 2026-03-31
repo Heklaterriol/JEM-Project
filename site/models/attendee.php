@@ -151,7 +151,7 @@ class JemModelAttendee extends BaseDatabaseModel
 
         // bind it to the table
         if (!$row->bind($data)) {
-            \Joomla\CMS\Factory::getApplication()->enqueueMessage($this->_db->getErrorMsg(), 'error');
+            // DB errors now thrown as exceptions
             return false;
         }
 
@@ -187,14 +187,16 @@ class JemModelAttendee extends BaseDatabaseModel
         }
 
         // Make sure the data is valid
-        if (!$row->check()) {
-            $this->setError($row->getError());
+        try {
+            $row->check();
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
         // Store it in the db
         if (!$row->store()) {
-            Factory::getApplication()->enqueueMessage($this->_db->getErrorMsg(), 'error');
+            // DB errors now thrown as exceptions
             return false;
         }
 

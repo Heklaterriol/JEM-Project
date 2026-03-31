@@ -46,7 +46,7 @@ class JemControllerEvents extends AdminController
     public function featured()
     {
         // Check for request forgeries
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         // Initialise variables.
         $user   = JemFactory::getUser();

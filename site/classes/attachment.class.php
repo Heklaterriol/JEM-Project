@@ -13,7 +13,6 @@ use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Object\CMSObject;
 use Joomla\Filesystem\Path;
 
 // ensure JemFactory is loaded (because this class is used by modules or plugins too)
@@ -24,7 +23,7 @@ require_once(JPATH_SITE.'/components/com_jem/factory.php');
  *
  * @package JEM
  */
-class JemAttachment extends CMSObject
+class JemAttachment
 {
     /**
      * upload files for the specified object
@@ -107,8 +106,11 @@ class JemAttachment extends CMSObject
             $table->added = date('Y-m-d H:i:s');
             $table->added_by = $user->get('id');
 
-            if (!($table->check() && $table->store())) {
-                \Joomla\CMS\Factory::getApplication()->enqueueMessage(Text::_('COM_JEM_ERROR_ATTACHMENT_SAVING_TO_DB').': '.$table->getError(), 'warning');
+            try {
+                $table->check();
+                $table->store();
+            } catch (\RuntimeException $e) {
+                \Joomla\CMS\Factory::getApplication()->enqueueMessage(Text::_('COM_JEM_ERROR_ATTACHMENT_SAVING_TO_DB').': '.$e->getMessage(), 'warning');
             }
         } // foreach
 
@@ -129,8 +131,11 @@ class JemAttachment extends CMSObject
         $table->load($attach['id']);
         $table->bind($attach);
 
-        if (!($table->check() && $table->store())) {
-            \Joomla\CMS\Factory::getApplication()->enqueueMessage(Text::_('COM_JEM_ERROR_ATTACHMENT_UPDATING_RECORD').': '.$table->getError(), 'warning');
+        try {
+            $table->check();
+            $table->store();
+        } catch (\RuntimeException $e) {
+            \Joomla\CMS\Factory::getApplication()->enqueueMessage(Text::_('COM_JEM_ERROR_ATTACHMENT_UPDATING_RECORD').': '.$e->getMessage(), 'warning');
             return false;
         }
 

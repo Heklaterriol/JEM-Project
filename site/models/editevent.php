@@ -84,10 +84,8 @@ class JemModelEditevent extends JemModelEvent
         $return = $table->load($itemId);
 
         // Check for a table object error.
-        if ($return === false && $table->getError()) {
-            $this->setError($table->getError());
-            return false;
-        }
+        // In J6, Table::load() throws RuntimeException on failure
+        // The $return check above is superseded by exception handling in calling code
 
         $properties = $table->getProperties(1);
         $value = ArrayHelper::toObject($properties, 'stdClass');

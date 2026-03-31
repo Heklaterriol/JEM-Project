@@ -72,7 +72,7 @@ class JemControllerSource extends BaseController
      * This controller does not have a display method. Redirect back to the list view of the component.
      *
      * @param  boolean  If true, the view output will be cached
-     * @param  array    An array of safe url parameters and their variable types, for valid values see {@link JFilterInput::clean()}.
+     * @param  array    An array of safe url parameters and their variable types, for valid values see {@link InputFilter::clean()}.
      *
      * @return JController  This object to support chaining.
      *
@@ -117,7 +117,7 @@ class JemControllerSource extends BaseController
     public function cancel()
     {
         // Check for request forgeries.
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         // Initialise variables.
         $app     = Factory::getApplication();
@@ -138,7 +138,7 @@ class JemControllerSource extends BaseController
     public function save()
     {
         // Check for request forgeries.
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         // Initialise variables.
         $app     = Factory::getApplication();

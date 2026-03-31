@@ -11,9 +11,9 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Session\Session;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 /**
  * JEM Component Controller
@@ -410,7 +410,7 @@ class JemController extends BaseController
     public function getfile()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $id = Factory::getApplication()->input->getInt('file', 0);
         $path = JemAttachment::getAttachmentPath($id);
@@ -438,7 +438,7 @@ class JemController extends BaseController
     public function ajaxattachremove()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $jemsettings = JemHelper::config();
         $res = 0;
@@ -453,8 +453,8 @@ class JemController extends BaseController
             $this->app->close();
         }
 
-        $cache = Factory::getCache('com_jem');
-        $cache->clean();
+        Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+            ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
 
         echo 1; // The caller expects an answer!
         $this->app->close();;

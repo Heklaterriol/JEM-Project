@@ -13,6 +13,7 @@ use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 /**
  * Controller: Venues
@@ -42,7 +43,7 @@ class JemControllerVenues extends AdminController
     public function remove()
     {
         // Check for token
-        Session::checkToken() or jexit(Text::_('COM_JEM_GLOBAL_INVALID_TOKEN'));
+        $this->checkToken();
 
         $app = Factory::getApplication();
         $user = Factory::getApplication()->getIdentity();
@@ -80,8 +81,8 @@ class JemControllerVenues extends AdminController
             $this->postDeleteHook($model,$cid);
         }
 
-        $cache = Factory::getCache('com_jem');
-        $cache->clean();
+        Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+            ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
 
         $this->setRedirect( 'index.php?option=com_jem&view=venues');
     }

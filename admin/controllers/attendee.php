@@ -14,6 +14,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Session\Session;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 /**
  * Controller: Attendee
@@ -51,7 +52,7 @@ class JemControllerAttendee extends BaseController
     public function cancel()
     {
         // Check for request forgeries.
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         $attendee = Table::getInstance('jem_register', '');
         $attendee->bind(Factory::getApplication()->input->post->getArray(/*get them all*/));
@@ -69,7 +70,7 @@ class JemControllerAttendee extends BaseController
     public function save()
     {
         // Check for request forgeries.
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         // Defining JInput
         $jinput = Factory::getApplication()->input;
@@ -144,8 +145,8 @@ class JemControllerAttendee extends BaseController
             }
             $msg = Text::_('COM_JEM_ATTENDEE_SAVED');
 
-            $cache = Factory::getCache('com_jem');
-            $cache->clean();
+            Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+                ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
         } else {
             $msg     = '';
             $link     = 'index.php?option=com_jem&view=attendees&eventid='.$eventid;

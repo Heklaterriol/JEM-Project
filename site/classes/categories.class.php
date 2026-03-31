@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Object\CMSObject;
 use Joomla\Registry\Registry;
 use Joomla\CMS\HTML\HTMLHelper;
 
@@ -808,7 +807,7 @@ class JemCategories
 /**
  * Helper class to load Categorytree
  */
-class JemCategoryNode extends CMSObject
+class JemCategoryNode
 {
 
     /**

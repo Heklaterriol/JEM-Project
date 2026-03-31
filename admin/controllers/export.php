@@ -10,72 +10,74 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\AdminController;
-use Joomla\CMS\Session\Session;
 
 /**
  * JEM Component Export Controller
- *
  */
 class JemControllerExport extends AdminController
 {
     /**
-    * Proxy for getModel.
-    *
-    */
-    public function getModel($name = 'Export', $prefix = 'JemModel', $config=array()) {
-        $model = parent::getModel($name, $prefix, array('ignore_request' => true));
-        return $model;
+     * Proxy for getModel.
+     */
+    public function getModel($name = 'Export', $prefix = 'JemModel', $config = [])
+    {
+        return parent::getModel($name, $prefix, ['ignore_request' => true]);
     }
 
     public function export()
     {
-        // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
-
-        $this->sendHeaders("jem_export-" . date('Ymd-His') . ".csv", "text/csv");
-        $this->getModel()->getCsv();
-        jexit();
+        $this->checkToken();
+        $this->streamCsv("jem_export-" . date('Ymd-His') . ".csv", 'getCsv');
     }
 
     public function exportcats()
     {
-        // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
-
-        $this->sendHeaders("categories.csv", "text/csv");
-        $this->getModel()->getCsvcats();
-        jexit();
+        $this->checkToken();
+        $this->streamCsv('categories.csv', 'getCsvcats');
     }
 
     public function exportvenues()
     {
-        // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
-
-        $this->sendHeaders("venues.csv", "text/csv");
-        $this->getModel()->getCsvvenues();
-        jexit();
+        $this->checkToken();
+        $this->streamCsv('venues.csv', 'getCsvvenues');
     }
 
     public function exportcatevents()
     {
-        // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
-
-        $this->sendHeaders("catevents.csv", "text/csv");
-        $this->getModel()->getCsvcatsevents();
-        jexit();
+        $this->checkToken();
+        $this->streamCsv('catevents.csv', 'getCsvcatsevents');
     }
 
-    private function sendHeaders($filename = 'export.csv', $contentType = 'text/plain')
+    /**
+     * Stream a CSV file to the browser using the J6 Response object.
+     *
+     * @param  string  $filename   Download filename
+     * @param  string  $modelMethod  Method on the Export model to call
+     */
+    private function streamCsv(string $filename, string $modelMethod): void
     {
-        // TODO: Use UTF-8
-        // We have to fix the model->getCsv* methods too!
-        // header("Content-type: text/csv; charset=UTF-8");
-        header("Content-type: text/csv;");
-        header("Content-Disposition: attachment; filename=" . $filename);
-        header("Pragma: no-cache");
-        header("Expires: 0");
+        $app      = Factory::getApplication();
+        $response = $app->getResponse();
+
+        $response = $response
+            ->withHeader('Content-Type', 'text/csv; charset=UTF-8')
+            ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->withHeader('Pragma', 'no-cache')
+            ->withHeader('Expires', '0')
+            ->withHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0');
+
+        // Emit headers before streaming body
+        foreach ($response->getHeaders() as $name => $values) {
+            foreach ($values as $value) {
+                header($name . ': ' . $value, false);
+            }
+        }
+
+        // Stream CSV body directly to output buffer
+        $this->getModel()->{$modelMethod}();
+
+        $app->close();
     }
 }

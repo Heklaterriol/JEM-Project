@@ -17,6 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Version;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Router\Route;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 /**
  * JEM package installer script.
  */
@@ -79,9 +80,8 @@ class Pkg_JemInstallerScript
 
     public function postflight($type, $parent) {
         // Clear Joomla system cache.
-        /** @var JCache|JCacheController $cache */
-        $cache = Factory::getCache();
-        $cache->clean('_system');
+        Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+            ->createCacheController('callback', ['defaultgroup' => '_system'])->clean('_system');
 
         // Remove all compiled files from APC cache.
         if (function_exists('apc_clear_cache')) {

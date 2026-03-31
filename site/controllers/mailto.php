@@ -11,7 +11,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Session\Session;
+use Joomla\CMS\Mail\MailHelper;
 
 require_once (JPATH_COMPONENT_SITE.'/classes/controller.form.class.php');
 
@@ -33,7 +33,7 @@ class JemControllerMailto extends JemControllerForm
     }
 
     public function save($key = NULL, $urlVar = NULL){
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         $app        = Factory::getApplication();
         $model      = $this->getModel('mailto');
@@ -106,7 +106,7 @@ class JemControllerMailto extends JemControllerForm
         $subject         = $data['subject'] !== '' ? $data['subject'] : $subject_default;
         $error = false;
 
-        if (!$data['emailto'] || !JMailHelper::isEmailAddress($data['emailto']))
+        if (!$data['emailto'] || !MailHelper::isEmailAddress($data['emailto']))
         {
             $error = Text::sprintf('COM_JEM_MAILTO_EMAIL_INVALID', $data['emailto']);
 
@@ -114,7 +114,7 @@ class JemControllerMailto extends JemControllerForm
         }
 
         // Check for a valid from address
-        if (!$data['emailfrom'] || !JMailHelper::isEmailAddress($data['emailfrom']))
+        if (!$data['emailfrom'] || !MailHelper::isEmailAddress($data['emailfrom']))
         {
             $error = Text::sprintf('COM_JEM_MAILTO_EMAIL_INVALID', $data['emailfrom']);
 
@@ -131,13 +131,13 @@ class JemControllerMailto extends JemControllerForm
 
         // To send we need to use punycode.
         $data['emailfrom'] = JStringPunycode::emailToPunycode($data['emailfrom']);
-        $data['emailfrom'] = JMailHelper::cleanAddress($data['emailfrom']);
+        $data['emailfrom'] = MailHelper::cleanAddress($data['emailfrom']);
         $data['emailto']   = JStringPunycode::emailToPunycode($data['emailto']);
         $from = array($data['emailfrom'], $data['sender']);
 
         // Clean the email data
-        $subject = JMailHelper::cleanSubject($subject);
-        $body    = JMailHelper::cleanBody($body);
+        $subject = MailHelper::cleanSubject($subject);
+        $body    = MailHelper::cleanBody($body);
 
         //--------------start new code ------------
         $mailer = Factory::getMailer();

@@ -929,7 +929,7 @@ class JemHelper
                         Factory::getApplication()->enqueueMessage(
                             Text::_(
                                 'COM_JEM_FAILED_BUMPING_USERS_FROM_WAITING_TO_CONFIRMED_LIST'
-                            ) . ': ' . $db->getErrorMsg(),
+                            ) . ': ' . Text::_('JERROR_AN_ERROR_HAS_OCCURRED'),
                             'warning'
                         );
                     }

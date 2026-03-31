@@ -13,8 +13,8 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Session\Session;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 
 require_once (JPATH_COMPONENT_SITE.'/classes/controller.form.class.php');
 
@@ -112,7 +112,7 @@ class JemControllerEvent extends JemControllerForm
     public function cancel($key = 'a_id')
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         parent::cancel($key);
 
@@ -282,7 +282,7 @@ class JemControllerEvent extends JemControllerForm
     {
     // echo "<pre/>";print_R($_POST);die;
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         $result = parent::save($key, $urlVar);
 
@@ -300,7 +300,7 @@ class JemControllerEvent extends JemControllerForm
     public function userregister()
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         $app = Factory::getApplication();
 		$input = $app->getInput();
@@ -336,8 +336,8 @@ class JemControllerEvent extends JemControllerForm
         $places = isset($reg->places) ? $reg->places : 0;
         $dispatcher->triggerEvent('onEventUserRegistered', array($register_id, $places));
 
-        $cache = Factory::getCache('com_jem');
-        $cache->clean();
+        Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+            ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
 
         $msg = Text::_('COM_JEM_REGISTRATION_THANKS_FOR_RESPONSE');
 
@@ -350,7 +350,7 @@ class JemControllerEvent extends JemControllerForm
     public function delreguser()
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         $id = Factory::getApplication()->input->getInt('rdid', 0);
 
@@ -366,8 +366,8 @@ class JemControllerEvent extends JemControllerForm
         $dispatcher = JemFactory::getDispatcher();
         $dispatcher->triggerEvent('onEventUserUnregistered', array($id));
 
-        $cache = Factory::getCache('com_jem');
-        $cache->clean();
+        Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+            ->createCacheController('callback', ['defaultgroup' => 'com_jem'])->clean();
 
         $msg = Text::_('COM_JEM_UNREGISTERED_SUCCESSFULL');
         $this->setRedirect(Route::_(JemHelperRoute::getEventRoute($id), false), $msg);

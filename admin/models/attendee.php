@@ -196,8 +196,10 @@ class JemModelAttendee extends BaseDatabaseModel
         }
 
         // bind it to the table
-        if (!$row->bind($data)) {
-            Factory::getApplication()->enqueueMessage($row->getError(), 'error');
+        try {
+            $row->bind($data);
+        } catch (\RuntimeException $e) {
+            Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
             return false;
         }
 
@@ -327,13 +329,13 @@ class JemModelAttendee extends BaseDatabaseModel
 
                 // Make sure the data is valid
                 if (!$row_aux->check()) {
-                    $this->setError($row->getError());
+                    $this->setError(Text::_('COM_JEM_SAVE_FAILED'));
                     return false;
                 }
 
                 // Store it in the db
                 if (!$row_aux->store()) {
-                    Factory::getApplication()->enqueueMessage($row->getError(), 'error');
+                    Factory::getApplication()->enqueueMessage(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 'error');
                     return false;
                 }
             }
@@ -377,7 +379,7 @@ class JemModelAttendee extends BaseDatabaseModel
                     ' WHERE id IN ('.implode(',', $pks).')'
                     );
             if ($db->execute() === false) {
-                throw new Exception($db->getErrorMsg());
+                throw new \RuntimeException(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 500);
             }
 
         } catch (Exception $e) {

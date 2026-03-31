@@ -12,7 +12,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Session\Session;
 
 require_once (JPATH_COMPONENT_SITE.'/classes/controller.form.class.php');
 
@@ -99,7 +98,7 @@ class JemControllerVenue extends JemControllerForm
     public function cancel($key = 'a_id')
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         parent::cancel($key);
 
@@ -261,7 +260,7 @@ class JemControllerVenue extends JemControllerForm
     public function save($key = null, $urlVar = 'a_id')
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         $result = parent::save($key, $urlVar);
 

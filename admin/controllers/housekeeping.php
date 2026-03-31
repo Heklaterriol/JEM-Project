@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Session\Session;
 
 /**
  * Housekeeping-Controller
@@ -41,7 +40,7 @@ class JemControllerHousekeeping extends BaseController
     public function delete()
     {
         // Check for request forgeries
-        Session::checkToken('get') or jexit('Invalid Token');
+        $this->checkToken('get');
 
         $task = Factory::getApplication()->input->get('task', '');
         $model = $this->getModel('housekeeping');
@@ -70,7 +69,7 @@ class JemControllerHousekeeping extends BaseController
     public function cleanupCatsEventRelations()
     {
         // Check for request forgeries
-        Session::checkToken('get') or jexit('Invalid Token');
+        $this->checkToken('get');
 
         $model = $this->getModel('housekeeping');
         $model->cleanupCatsEventRelations();
@@ -87,7 +86,7 @@ class JemControllerHousekeeping extends BaseController
     public function truncateAllData()
     {
         // Check for request forgeries
-        Session::checkToken('get') or jexit('Invalid Token');
+        $this->checkToken('get');
 
         $model = $this->getModel('housekeeping');
         $model->truncateAllData();
@@ -108,7 +107,7 @@ class JemControllerHousekeeping extends BaseController
     public function triggerarchive()
     {
         // Check for request forgeries
-        Session::checkToken('get') or jexit('Invalid Token');
+        $this->checkToken('get');
 
         JemHelper::cleanup(1);
 

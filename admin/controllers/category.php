@@ -116,7 +116,7 @@ class JemControllerCategory extends FormController
      */
     public function batchDisabled($model = null)
     {
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         // Set the model
         $model = $this->getModel('Category');

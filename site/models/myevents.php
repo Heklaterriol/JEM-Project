@@ -160,7 +160,7 @@ class JemModelMyevents extends BaseDatabaseModel
             $result = true;
 
             if ($this->_db->execute() === false) {
-                $this->setError($this->_db->getErrorMsg());
+                $this->setError(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'));
                 $result = false;
             }
         }
