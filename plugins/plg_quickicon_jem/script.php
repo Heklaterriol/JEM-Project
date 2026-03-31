@@ -8,7 +8,7 @@ class PlgQuickiconJemInstallerScript extends InstallerScript
     public function postflight($type, $parent)
     {
         if ($type === 'install' || $type === 'discover_install') {
-            $db = \Joomla\CMS\Factory::getDbo();
+            $db = \Joomla\CMS\Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true)
                 ->update($db->quoteName('#__extensions'))
                 ->set($db->quoteName('enabled') . ' = 1')

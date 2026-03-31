@@ -17,6 +17,7 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\User\User;
 
@@ -390,7 +391,7 @@ class PlgContentJemembed extends CMSPlugin
 
         // Set type filters
         $type = isset($parameters['type']) ? $parameters['type'] : 'unfinished';
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $timestamp = time();
 
         try {

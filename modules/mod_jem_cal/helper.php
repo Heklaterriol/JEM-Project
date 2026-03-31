@@ -16,6 +16,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
@@ -89,7 +90,7 @@ abstract class ModJemCalHelper extends ModuleHelper
         # Set params for the model
         $model->setState('params', $params);
 
-        $db       = Factory::getDbo();
+        $db       = Factory::getContainer()->get(DatabaseInterface::class);
         $user     = JemFactory::getUser();
         $levels   = $user->getAuthorisedViewLevels();
         $settings = JemHelper::globalattribs();
