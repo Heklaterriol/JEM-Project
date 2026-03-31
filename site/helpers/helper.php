@@ -191,7 +191,7 @@ class JemHelper
                 foreach ($recurrence_array as $recurrence_row)
                 {
                     // get the info of reference event for the duplicates
-                    $ref_event = Table::getInstance('Event', 'JemTable');
+                    $ref_event = new JemTableEvent(Factory::getContainer()->get('DatabaseDriver'));
                     $ref_event->load($recurrence_row['id']);
 
                     $db = Factory::getContainer()->get('DatabaseDriver');
@@ -244,7 +244,7 @@ class JemHelper
                             || strtotime($recurrence_row['dates']) <= strtotime($recurrence_row['recurrence_limit_date']))
                             && strtotime($recurrence_row['dates']) <= strtotime($shieldDate))
                     {
-                        $new_event = Table::getInstance('Event', 'JemTable');
+                        $new_event = new JemTableEvent(Factory::getContainer()->get('DatabaseDriver'));
                         $new_event->bind($reference, array('id', 'hits', 'dates', 'enddates','checked_out_time','checked_out'));
                         $new_event->recurrence_first_id = $recurrence_row['first_id'];
                         $new_event->recurrence_counter = $recurrence_row['counter'] + 1;

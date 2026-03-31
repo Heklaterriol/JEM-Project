@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\Registry\Registry;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Path;
+use Joomla\CMS\Access\Rules;
 
 /**
  * JEM Event Table
@@ -81,7 +82,7 @@ class JemTableEvent extends Table
         // Bind the rules.
         /*
         if (isset($array['rules']) && is_array($array['rules'])) {
-            $rules = new JAccessRules($array['rules']);
+            $rules = new Rules($array['rules']);
             $this->setRules($rules);
         }
         */
@@ -257,7 +258,7 @@ class JemTableEvent extends Table
                     $this->datimage = '';
                 } elseif (!$this->id && is_null($this->datimage) && !empty($datimage)) {
                     // event is a copy so copy datimage too
-                    if (File::exists($image_dir . $datimage)) {
+                    if (is_file($image_dir . $datimage)) {
                         // if it's already within image folder it's safe
                         $this->datimage = $datimage;
                     }

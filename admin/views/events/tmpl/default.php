@@ -12,7 +12,7 @@ use Joomla\CMS\Button\FeaturedButton;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Object\CMSObject;
+use Joomla\Registry\Registry;
 use Joomla\CMS\Button\PublishedButton;
 
 HTMLHelper::addIncludePath(JPATH_COMPONENT.'/helpers/html');
@@ -23,7 +23,7 @@ $listDirn    = $this->escape($this->state->get('list.direction'));
 $canOrder    = $user->authorise('core.edit.state', 'com_jem.category');
 $saveOrder    = $listOrder=='a.ordering';
 
-$params        = (isset($this->state->params)) ? $this->state->params : new CMSObject();
+$params        = (isset($this->state->params)) ? $this->state->params : new Registry();
 $settings    = $this->settings;
 $wa = $this->document->getWebAssetManager();
 $wa->useScript('table.columns');

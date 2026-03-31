@@ -198,7 +198,7 @@ class JemModelAttendees extends ListModel
 
             // TODO: use exception handling
             if ($db->execute() === false) {
-                throw new Exception($db->getErrorMsg(), 500);
+                throw new \RuntimeException(Text::_('JERROR_AN_ERROR_HAS_OCCURRED'), 500);
             }
         }
         return true;

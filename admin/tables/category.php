@@ -13,6 +13,7 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Nested;
 use Joomla\Registry\Registry;
+use Joomla\CMS\Access\Rules;
 
 // jimport('joomla.database.tablenested');
 
@@ -190,7 +191,7 @@ class JemTableCategory extends Nested
         }
 
         if (isset($array['rules']) && is_array($array['rules'])) {
-            $rules = new JAccessRules($array['rules']);
+            $rules = new Rules($array['rules']);
             $this->setRules($rules);
         }
 
@@ -217,7 +218,7 @@ class JemTableCategory extends Nested
             $this->created_user_id = $user->get('id');
         }
         // Verify that the alias is unique
-        $table = Table::getInstance('Category', 'JEMTable', array('dbo' => Factory::getContainer()->get('DatabaseDriver')));
+        $table = new JemTableCategory(Factory::getContainer()->get('DatabaseDriver'));
 
         if ($table->load(array('alias' => $this->alias, 'parent_id' => $this->parent_id))
             && ($table->id != $this->id || $this->id == 0)) {

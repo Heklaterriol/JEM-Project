@@ -166,7 +166,13 @@ class JemModelVenue extends JemModelAdmin
      */
     public function getTable($type = 'Venue', $prefix = 'JemTable', $config = array())
     {
-        return Table::getInstance($type, $prefix, $config);
+        // J6: Table::getInstance() replaced with direct instantiation
+        $db = \Joomla\CMS\Factory::getContainer()->get('DatabaseDriver');
+        $className = $prefix . ucfirst($type);
+        if (!class_exists($className)) {
+            throw new \RuntimeException(sprintf('Table class %s not found', $className), 500);
+        }
+        return new $className($db);
     }
 
     /**

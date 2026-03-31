@@ -16,6 +16,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Access\Rules;
 
 /**
  * Category Model
@@ -120,7 +121,13 @@ class JemModelCategory extends AdminModel
      */
     public function getTable($type = 'Category', $prefix = 'JemTable', $config = array())
     {
-        return Table::getInstance($type, $prefix, $config);
+        // J6: Table::getInstance() replaced with direct instantiation
+        $db = \Joomla\CMS\Factory::getContainer()->get('DatabaseDriver');
+        $className = $prefix . ucfirst($type);
+        if (!class_exists($className)) {
+            throw new \RuntimeException(sprintf('Table class %s not found', $className), 500);
+        }
+        return new $className($db);
     }
 
     /**
@@ -294,7 +301,7 @@ class JemModelCategory extends AdminModel
 
         // Bind the rules.
         if (isset($data['rules'])) {
-            $rules = new JAccessRules($data['rules']);
+            $rules = new Rules($data['rules']);
             $table->setRules($rules);
         }
 

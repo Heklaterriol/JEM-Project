@@ -63,21 +63,21 @@ class JemController extends BaseController
     public function ajaxattachremove()
     {
         // Check for request forgeries
-        Session::checkToken('request') or jexit('Invalid Token');
+        $this->checkToken('request');
 
         $id = Factory::getApplication()->input->getInt('id', 0);
 
         $res = JemAttachment::remove($id);
         if (!$res) {
             echo 0;
-            jexit();
+            Factory::getApplication()->close();
         }
 
         $cache = Factory::getCache('com_jem');
         $cache->clean();
 
         echo 1;
-        jexit();
+        Factory::getApplication()->close();
     }
 }
 ?>

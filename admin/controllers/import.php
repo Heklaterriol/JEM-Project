@@ -59,12 +59,14 @@ class JemControllerImport extends BaseController
     private function CsvImport($type, $dbname)
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 		
 		$app = Factory::getApplication();
 
         $replace = $app->input->post->getInt('replace_'.$type, 0);
-        $object = Table::getInstance('jem_'.$dbname, '');
+        // J6: Table::getInstance replaced with direct instantiation via autoloader
+        $className = 'jem_' . $dbname;
+        $object = new $className(\Joomla\CMS\Factory::getContainer()->get('DatabaseDriver'));
         $object_fields = get_object_vars($object);
         $jemconfig = JemConfig::getInstance()->toRegistry();
         $separator = $jemconfig->get('csv_separator', ';');
@@ -233,7 +235,7 @@ class JemControllerImport extends BaseController
     public function eventlistImport()
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
         $model = $this->getModel('import');
         $size = 5000;
@@ -338,8 +340,7 @@ class JemControllerImport extends BaseController
             }
         } elseif ($step === 3) {
             // We have to rebuild the hierarchy of the categories due to the plain database insertion
-            Table::addIncludePath(JPATH_COMPONENT_ADMINISTRATOR.'/tables');
-            $categoryTable = Table::getInstance('Category', 'JemTable');
+            $categoryTable = new JemTableCategory(Factory::getContainer()->get('DatabaseDriver'));
             $categoryTable->rebuild();
             $step++;
             $link .= '&step='.$step;

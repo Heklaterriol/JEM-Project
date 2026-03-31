@@ -227,7 +227,7 @@ class JemModelImport extends BaseDatabaseModel
         $pk = $replace ? false : 'id';
 
         // retrieve the specified table
-        $object = Table::getInstance($tablename, $prefix);
+        $object = $this->createTable($tablename, $prefix);
         $objectname = get_class($object);
         $rootkey = $this->_rootkey();
 
@@ -488,8 +488,6 @@ class JemModelImport extends BaseDatabaseModel
      */
     public function getEventlistVersion()
     {
-        jimport( 'joomla.registry.registry' );
-
         $db = $this->_db;
         $query = $db->getQuery('true');
         $query->select('manifest_cache')
@@ -887,7 +885,7 @@ class JemModelImport extends BaseDatabaseModel
         $rec = array ('added' => 0, 'updated' => 0, 'error' => 0);
 
         foreach ($data as $row) {
-            $object = Table::getInstance($tablename, ''); // don't optimise this, you get trouble with 'id'...
+            $object = $this->createTable($tablename); // J6: was Table::getInstance
             $object->bind($row, $ignore);
 
             // Make sure the data is valid
@@ -958,7 +956,7 @@ class JemModelImport extends BaseDatabaseModel
             $fromFolder = JPATH_SITE.'/images/eventlist/'.$folder.'/';
             $toFolder   = JPATH_SITE.'/images/jem/'.$folder.'/';
 
-            if (Folder::exists($fromFolder) && Folder::exists($toFolder)) {
+            if (is_dir($fromFolder) && is_dir($toFolder)) {
                 $files = Folder::files($fromFolder, null, false, false);
 
                 foreach ($files as $file) {
@@ -983,11 +981,11 @@ class JemModelImport extends BaseDatabaseModel
         $fromFolder = JPATH_SITE.'/media/com_eventlist/attachments/';
         $toFolder   = JPATH_SITE.'/'.$jemsettings->attachments_path.'/';
 
-        if (!Folder::exists($toFolder)) {
+        if (!is_dir($toFolder)) {
             Folder::create($toFolder);
         }
 
-        if (Folder::exists($fromFolder) && Folder::exists($toFolder)) {
+        if (is_dir($fromFolder) && is_dir($toFolder)) {
             $files = Folder::files($fromFolder, null, false, false);
             foreach ($files as $file) {
                 if (!is_file($toFolder.$file)) {
@@ -999,7 +997,7 @@ class JemModelImport extends BaseDatabaseModel
             // so we need to walk through all these subfolders
             $folders = Folder::folders($fromFolder, null, false, false);
             foreach ($folders as $folder) {
-                if (!Folder::exists($toFolder.$folder)) {
+                if (!is_dir($toFolder.$folder)) {
                     Folder::create($toFolder.$folder);
                 }
 
@@ -1177,6 +1175,19 @@ class JemModelImport extends BaseDatabaseModel
         {
             Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
         }
+    }
+
+    /**
+     * Create a JEM table instance by name (J6: replaces Table::getInstance).
+     */
+    private function createTable(string $name, string $prefix = ''): \Joomla\CMS\Table\Table
+    {
+        $db = Factory::getContainer()->get('DatabaseDriver');
+        $className = $prefix !== '' ? $prefix . ucfirst($name) : $name;
+        if (!class_exists($className)) {
+            throw new \RuntimeException(sprintf('JEM table class "%s" not found', $className), 500);
+        }
+        return new $className($db);
     }
 }
 ?>

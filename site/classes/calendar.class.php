@@ -173,19 +173,11 @@ class JemCalendar
         ********************************************************************************
         */
 
-        if (version_compare(JVERSION, '5.0.0', '>=')) {
-            // Joomla 5
-            $this->yearNavBack=" <i class='fa-solid fa-backward'></i> "; // Previous year
-            $this->yearNavForw=" <i class='fa-solid fa-forward'></i> "; // Next year
-            $this->monthNavBack=" <i class='fa-solid fa-backward-step'></i> "; // Previous month
-            $this->monthNavForw=" <i class='fa-solid fa-forward-step'></i> "; // Next month
-        } elseif (version_compare(JVERSION, '4.0.0', '>=')) {
-            // Joomla 4
-            $this->yearNavBack=" &lt;&lt; "; // Previous year, this could be an image link
-            $this->yearNavForw=" &gt;&gt; "; // Next year, this could be an image link
-            $this->monthNavBack=" &lt;&lt; "; // Previous month, this could be an image link
-            $this->monthNavForw=" &gt;&gt; "; // Next month, this could be an image link
-        }
+        // Joomla 5/6: Font Awesome 6 icons
+        $this->yearNavBack=" <i class='fa-solid fa-backward'></i> "; // Previous year
+        $this->yearNavForw=" <i class='fa-solid fa-forward'></i> "; // Next year
+        $this->monthNavBack=" <i class='fa-solid fa-backward-step'></i> "; // Previous month
+        $this->monthNavForw=" <i class='fa-solid fa-forward-step'></i> "; // Next month
         $this->selBtn="Go"; // value of the date picker button (if enabled)
         $this->monthYearDivider=" "; // the divider between month and year in the month`s title
     }

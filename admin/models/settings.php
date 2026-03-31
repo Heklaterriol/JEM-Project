@@ -121,7 +121,7 @@ class JemModelSettings extends AdminModel
         // Old table - deprecated, maybe already removed
         //
         try {
-            $settings = Table::getInstance('Settings', 'JemTable');
+            $settings = new JemTableSettings(Factory::getContainer()->get('DatabaseDriver'));
 
             $fields = $settings->getFields();
             if (!empty($fields)) {

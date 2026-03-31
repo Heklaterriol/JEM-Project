@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Filter\InputFilter;
 
 /**
  * JEM Component users Model
@@ -147,8 +148,8 @@ class JemModelUsers extends BaseDatabaseModel
         $filter_order     = $app->getUserStateFromRequest( 'com_jem.users.filter_order', 'filter_order', 'u.name', 'cmd' );
         $filter_order_Dir = $app->getUserStateFromRequest( 'com_jem.users.filter_order_Dir', 'filter_order_Dir', '', 'word' );
 
-        $filter_order     = JFilterInput::getInstance()->clean($filter_order, 'cmd');
-        $filter_order_Dir = JFilterInput::getInstance()->clean($filter_order_Dir, 'word');
+        $filter_order     = InputFilter::getInstance()->clean($filter_order, 'cmd');
+        $filter_order_Dir = InputFilter::getInstance()->clean($filter_order_Dir, 'word');
 
         $orderby = ' ORDER BY '.$filter_order.' '.$filter_order_Dir;
 

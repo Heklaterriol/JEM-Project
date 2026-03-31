@@ -70,7 +70,7 @@ class JemAttachment
                 continue;
             }
 
-            if (!Folder::exists($path)) {
+            if (!is_dir($path)) {
                 // try to create it
                 $res = Folder::create($path);
                 if (!$res) {
@@ -90,7 +90,7 @@ class JemAttachment
             // but keep all other checks running
             File::upload($rec['tmp_name'], $filepath, false, false, array('fobidden_ext_in_content' => false));
 
-            $table = Table::getInstance('jem_attachments', '');
+            $table = new jem_attachments(Factory::getContainer()->get('DatabaseDriver'));
             $table->file = $sanitizedFilename;
             $table->object = $object;
             if (isset($rec['customname']) && !empty($rec['customname'])) {
@@ -127,7 +127,7 @@ class JemAttachment
             return false;
         }
 
-        $table = Table::getInstance('jem_attachments', '');
+        $table = new jem_attachments(Factory::getContainer()->get('DatabaseDriver'));
         $table->load($attach['id']);
         $table->bind($attach);
 

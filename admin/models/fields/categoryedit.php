@@ -121,7 +121,7 @@ class JFormFieldCategoryEdit extends ListField
         }
         catch (RuntimeException $e)
         {
-            Factory::getApplication()->enqueueMessage($e->getErrorMsg(), 'warning');
+            Factory::getApplication()->enqueueMessage($e->getMessage(), 'warning');
         }
 
         // Pad the option text with spaces using depth level as a multiplier.

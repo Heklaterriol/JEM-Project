@@ -40,8 +40,9 @@ abstract class JemFactory extends Factory
         $app = Factory::getApplication();
         if (is_null($id))
         {
-            $instance = $app->getSession()->get('user');
-            $id = ($instance instanceof User) ? $instance->id : 0;
+            // J6: getSession()->get('user') → getIdentity()
+            $identity = $app->getIdentity();
+            $id       = $identity ? (int) $identity->id : 0;
         }
 
         return JemUser::getInstance($id);
@@ -65,13 +66,10 @@ abstract class JemFactory extends Factory
     }
 
     /**
-     * Get the dispatcher.
+     * Get the event dispatcher (via application).
      *
-     * Returns the static {@link JDispatcher} or {@link JEventDispatcher} object, depending on Joomla version.
+     * @return  \Joomla\CMS\Application\CMSApplication
      *
-     * @return  JDispatcher or JEventDispatcher object
-     *
-     * @see     JDispatcher, JEventDispatcher
      * @since   2.1.7
      */
     public static function getDispatcher()

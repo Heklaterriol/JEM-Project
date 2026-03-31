@@ -436,13 +436,8 @@ static public function lightbox() {
             // On Joomla Edit icon is always used regardless if "Show icons" is set to Yes or No.
             $showIcon = $settings->get('global_show_icons', 1);
 
-            if (version_compare(JVERSION, '5.0.0', '>=')) {
-                // Joomla 5 with Font Awesome 6
-                $iconEditEventRoot='fa-sharp fa-solid fa-pen-to-square jem-editbutton';
-            } elseif (version_compare(JVERSION, '4.0.0', '>=')) {
-                // Joomla 4 with Font Awesome 5
-                $iconEditEventRoot='fa fa-fw fa-edit jem-editbutton';
-            }
+            // Joomla 5/6: Font Awesome 6
+            $iconEditEventRoot='fa-sharp fa-solid fa-pen-to-square jem-editbutton';
 
             switch ($view)
             {
@@ -1091,15 +1086,9 @@ static public function lightbox() {
             return null;
         }
 
-        if (version_compare(JVERSION, '5.0.0', '>=')) {
-            // Joomla 5 with Font Awesome 6
-            $iconRecurrenceFirst = 'fa fa-fw fa-refresh jem-recurrencefirsticon';
-            $iconRecurrence      = 'fa fa-fw fa-refresh jem-recurrenceicon';
-        } else {
-            // Joomla 4 with Font Awesome 5
-            $iconRecurrenceFirst = 'fa fa-fw fa-sync jem-recurrencefirsticon';
-            $iconRecurrence      = 'fa fa-fw fa-sync jem-recurrenceicon';
-        }
+        // Joomla 5/6: Font Awesome 6
+        $iconRecurrenceFirst = 'fa fa-fw fa-refresh jem-recurrencefirsticon';
+        $iconRecurrence      = 'fa fa-fw fa-refresh jem-recurrenceicon';
 
         $first = !empty($item->recurrence_type) && empty($item->recurrence_first_id);
 

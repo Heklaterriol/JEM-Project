@@ -46,7 +46,7 @@ class JemControllerImagehandler extends BaseController
     public function uploadimage()
     {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid token');
+        $this->checkToken();
 
         $app = Factory::getApplication();
         $jemsettings = JemAdmin::config();
@@ -100,7 +100,7 @@ class JemControllerImagehandler extends BaseController
     public function delete()
     {
         // Check for request forgeries
-        Session::checkToken('get') or jexit('Invalid Token');
+        $this->checkToken('get');
 
         $app = Factory::getApplication();
 
@@ -120,7 +120,7 @@ class JemControllerImagehandler extends BaseController
                 $fullPaththumb = Path::clean(JPATH_SITE.'/images/jem/'.$folder.'/small/'.$image);
                 if (is_file($fullPath)) {
                     File::delete($fullPath);
-                    if (File::exists($fullPaththumb)) {
+                    if (is_file($fullPaththumb)) {
                         File::delete($fullPaththumb);
                     }
                 }

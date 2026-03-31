@@ -123,7 +123,7 @@ class JemModelAttendee extends BaseDatabaseModel
         // Lets load the content if it doesn't already exist
         if (empty($this->_data))
         {
-            $data = Table::getInstance('jem_register', '');
+            $data = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
             $data->username = null;
             if (empty($data->eventtitle)) {
                 $jinput = Factory::getApplication()->input;
@@ -154,7 +154,7 @@ class JemModelAttendee extends BaseDatabaseModel
             return false;
         }
 
-        $row = Table::getInstance('jem_register', '');
+        $row = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
         $row->bind($attendee);
         $row->waiting = ($attendee->waiting || ($attendee->status == 2)) ? 0 : 1;
         if ($row->status == 2) {
@@ -188,7 +188,7 @@ class JemModelAttendee extends BaseDatabaseModel
         }
 
         // $row = $this->getTable('jem_register', '');
-        $row = Table::getInstance('jem_register', '');
+        $row = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
 
         if ($id > 0) {
             $row->load($id);

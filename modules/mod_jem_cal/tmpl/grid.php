@@ -199,14 +199,6 @@ for ($day = 1; $day <= $days_in_month; $day++, $weekday++) {
                     $tipTitle = '';
                 }
 
-                if (version_compare(JVERSION, '3.2.7', 'lt')) {
-                    # There is a bug in Joomla which will format complete tip text as title
-                    #  if $tipTitle is empty (because then no '::' will be added).
-                    #  So add it manually and let title param empty.
-                    $tip = $tipTitle . '::';
-                    $tipTitle = '';
-                }
-
                 # If user hadn't explicitely typed in a 0 list limited number or all events
                 if ($tooltips_max_events !== '0') {
                     $count = 0;

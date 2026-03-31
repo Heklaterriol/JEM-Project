@@ -54,7 +54,7 @@ class JemControllerAttendee extends BaseController
         // Check for request forgeries.
         $this->checkToken();
 
-        $attendee = Table::getInstance('jem_register', '');
+        $attendee = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
         $attendee->bind(Factory::getApplication()->input->post->getArray(/*get them all*/));
         $attendee->checkin();
 

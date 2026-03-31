@@ -44,7 +44,7 @@ class JemControllerCategories extends AdminController
      */
     public function rebuild()
     {
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         $this->setRedirect(Route::_('index.php?option=com_jem&view=categories', false));
 
@@ -69,7 +69,7 @@ class JemControllerCategories extends AdminController
      */
     public function saveorderDisabled()
     {
-        Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+        $this->checkToken();
 
         // Get the arrays from the Request
         $order = Factory::getApplication()->input->post->get('order', array(), 'array');
@@ -91,7 +91,7 @@ class JemControllerCategories extends AdminController
       */
      public function deleteDisabled()
      {
-         Session::checkToken() or jexit(Text::_('JINVALID_TOKEN'));
+         $this->checkToken();
 
          // Get items to remove from the request.
          $cid = Factory::getApplication()->input->get('cid', array(), 'array');
@@ -134,7 +134,7 @@ class JemControllerCategories extends AdminController
      public function remove()
      {
         // Check for request forgeries
-        Session::checkToken() or jexit('Invalid Token');
+        $this->checkToken();
 
          $cid= Factory::getApplication()->input->post->get('cid', array(), 'array');
 
