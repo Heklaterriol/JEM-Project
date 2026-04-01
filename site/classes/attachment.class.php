@@ -23,6 +23,7 @@ require_once(JPATH_SITE.'/components/com_jem/factory.php');
  *
  * @package JEM
  */
+#[\AllowDynamicProperties]
 class JemAttachment
 {
     /**

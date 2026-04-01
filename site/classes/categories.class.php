@@ -807,6 +807,8 @@ class JemCategories
 /**
  * Helper class to load Categorytree
  */
+
+#[\AllowDynamicProperties]
 class JemCategoryNode
 {
 
@@ -978,6 +980,24 @@ class JemCategoryNode
      * Constructor of this tree
      */
     protected $_constructor = null;
+
+    /**
+     * Set object properties from an associative array or object.
+     * Replaces CMSObject::setProperties() which was removed in Joomla 6.
+     *
+     * @param   array|object  $properties  Properties to set.
+     * @return  bool
+     */
+    public function setProperties($properties): bool
+    {
+        if (is_array($properties) || is_object($properties)) {
+            foreach ((array) $properties as $k => $v) {
+                $this->$k = $v;
+            }
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Class constructor
