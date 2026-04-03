@@ -26,14 +26,21 @@ class JemModelAttendee extends BaseDatabaseModel
      *
      * @var int
      */
-    protected $_id = null;
+    protected int $_id = 0;
 
     /**
-     * Attendee data array
+     * Attendee data
      *
-     * @var array
+     * @var object|null
      */
-    protected $_data = null;
+    protected ?object $_data = null;
+
+    /**
+     * Use real name or username
+     *
+     * @var int
+     */
+    protected int $regname = 1;
 
     /**
      * Constructor
@@ -44,10 +51,13 @@ class JemModelAttendee extends BaseDatabaseModel
         parent::__construct();
 
         $settings = JemHelper::globalattribs();
-        $this->regname = $settings->get('global_regname','1');
+        $this->regname = (int) $settings->get('global_regname', 1);
 
-        $array = Factory::getApplication()->input->get('cid', array(0), 'array');
-        $this->setId((int)$array[0]);
+        $app   = Factory::getApplication();
+        $input = $app->input;
+
+        $cid = $input->get('cid', [0], 'array');
+        $this->setId((int) ($cid[0] ?? 0));
     }
 
     /**
@@ -56,10 +66,10 @@ class JemModelAttendee extends BaseDatabaseModel
      * @access public
      * @param  int attendee/registration identifier
      */
-    public function setId($id)
+    public function setId(int $id): void
     {
         // Set category id and wipe data
-        $this->_id = $id;
+        $this->_id   = $id;
         $this->_data = null;
     }
 
@@ -69,7 +79,7 @@ class JemModelAttendee extends BaseDatabaseModel
      * @access public
      * @return array
      */
-    public function getData()
+    public function getData(): object
     {
         if (!$this->_loadData()) {
             $this->_initData();
@@ -84,20 +94,32 @@ class JemModelAttendee extends BaseDatabaseModel
      * @access protected
      * @return boolean  True on success
      */
-    protected function _loadData()
+    protected function _loadData(): bool
     {
         // Lets load the content if it doesn't already exist
-        if (empty($this->_data))
-        {
-            $query = 'SELECT r.*, ' . ($this->regname ? 'u.name' : 'u.username') . ' AS username '
-                   . ' FROM #__jem_register AS r '
-                   . ' LEFT JOIN #__users AS u ON u.id = r.uid '
-                   . ' WHERE r.id = '.$this->_db->quote($this->_id)
-                   ;
-            $this->_db->setQuery($query);
-            $this->_data = $this->_db->loadObject();
+        if ($this->_data === null) {
+            $db = $this->getDatabase();
 
-            return (boolean) $this->_data;
+            $query = $db->getQuery(true)
+                ->select([
+                    'r.*',
+                    ($this->regname ? 'u.name' : 'u.username') . ' AS username'
+                ])
+                ->from('#__jem_register AS r')
+                ->leftJoin('#__users AS u ON u.id = r.uid')
+                ->where('r.id = :id')
+                ->bind(':id', $this->_id, \PDO::PARAM_INT);
+
+            $db->setQuery($query);
+
+            try {
+                $this->_data = $db->loadObject();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
+            }
+
+            return (bool) $this->_data;
         }
 
         return true;
@@ -109,32 +131,48 @@ class JemModelAttendee extends BaseDatabaseModel
      * @access protected
      * @return boolean  True on success
      */
-    protected function _initData()
+    protected function _initData(): bool
     {
-        // Lets load the content if it doesn't already exist
-        if (empty($this->_data)) {
-            $data = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
-            $data->username = null;
-            $this->_data = $data;
+        if ($this->_data === null) {
+            $table = $this->getTable('jem_register', '');
+            $table->username = null;
+            $this->_data = $table;
         }
 
         return true;
     }
 
-    public function toggle()
+    /**
+     * Toggle waiting status
+     */
+    public function toggle(): bool
     {
         $attendee = $this->getData();
 
-        if (!$attendee->id) {
+        if (empty($attendee->id)) {
             $this->setError(Text::_('COM_JEM_MISSING_ATTENDEE_ID'));
             return false;
         }
 
-        $row = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
-        $row->bind($attendee);
-        $row->waiting = $attendee->waiting ? 0 : 1;
+        $row = $this->getTable('jem_register', '');
 
-        return $row->store();
+        // bind() returns false, does not throw an exception
+        if (!$row->bind((array) $attendee)) {
+            $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
+            return false;
+        }
+
+        $row->waiting = ((int) $attendee->waiting === 1) ? 0 : 1;
+
+        // store() throws RuntimeException in J6
+        try {
+            $row->store();
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -143,42 +181,57 @@ class JemModelAttendee extends BaseDatabaseModel
      * @access public
      * @return boolean  True on success
      */
-    public function store($data)
+    public function store(array $data)
     {
-        $eventid = $data['event'];
+        $db      = $this->getDatabase();
+        $eventid = (int) ($data['event'] ?? 0);
 
         $row = $this->getTable('jem_register', '');
 
         // bind it to the table
         if (!$row->bind($data)) {
             // DB errors now thrown as exceptions
+            $this->setError($row->getError());
             return false;
         }
 
         // sanitise id field
         $row->id = (int) $row->id;
 
-        // Are we saving from an item edit?
+        // New registration
         if (!$row->id) {
             $row->uregdate = gmdate('Y-m-d H:i:s');
 
-            $query = ' SELECT e.maxplaces, e.waitinglist, COUNT(r.id) as booked '
-                   . ' FROM #__jem_events AS e '
-                   . ' INNER JOIN #__jem_register AS r ON r.event = e.id '
-                   . ' WHERE e.id = ' . $this->_db->Quote($eventid)
-                   . '   AND r.status = 1 AND r.waiting = 0 '
-                   . ' GROUP BY e.id ';
-            $this->_db->setQuery($query);
-            $details = $this->_db->loadObject();
+            $query = $db->getQuery(true)
+                ->select([
+                    'e.maxplaces',
+                    'e.waitinglist',
+                    'COUNT(r.id) AS booked'
+                ])
+                ->from('#__jem_events AS e')
+                ->innerJoin('#__jem_register AS r ON r.event = e.id')
+                ->where('e.id = :eventid')
+                ->where('r.status = 1')
+                ->where('r.waiting = 0')
+                ->group('e.id')
+                ->bind(':eventid', $eventid, \PDO::PARAM_INT);
 
-            // put on waiting list ?
-            if ($details->maxplaces > 0) // there is a max
-            {
-                // check if the user should go on waiting list
-                if ($details->booked >= $details->maxplaces)
-                {
-                    if (!$details->waitinglist) {
-                        \Joomla\CMS\Factory::getApplication()->enqueueMessage(Text::_('COM_JEM_ERROR_REGISTER_EVENT_IS_FULL'), 'warning');
+            $db->setQuery($query);
+
+            try {
+                $details = $db->loadObject();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
+            }
+
+            if ($details && (int) $details->maxplaces > 0) {
+                if ((int) $details->booked >= (int) $details->maxplaces) {
+                    if (!(int) $details->waitinglist) {
+                        Factory::getApplication()->enqueueMessage(
+                            Text::_('COM_JEM_ERROR_REGISTER_EVENT_IS_FULL'),
+                            'warning'
+                        );
                         return false;
                     }
                     $row->waiting = 1;
@@ -186,21 +239,15 @@ class JemModelAttendee extends BaseDatabaseModel
             }
         }
 
-        // Make sure the data is valid
+        // Validate + store
         try {
             $row->check();
+            $row->store();
         } catch (\RuntimeException $e) {
             $this->setError($e->getMessage());
-            return false;
-        }
-
-        // Store it in the db
-        if (!$row->store()) {
-            // DB errors now thrown as exceptions
             return false;
         }
 
         return $row;
     }
 }
-?>
