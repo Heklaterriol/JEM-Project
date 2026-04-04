@@ -161,8 +161,10 @@ class JemModelGroups extends ListModel
 
             $this->_db->setQuery($query);
 
-            if ($this->_db->execute() === false) {
-                $this->setError($this->_db->getError());
+            try {
+                $this->_db->execute();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
                 return false;
             }
 

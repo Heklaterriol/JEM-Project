@@ -292,8 +292,9 @@ class JemModelImport extends BaseDatabaseModel
             if (strcasecmp($objectname, 'JemTableCategory') == 0) {
                 // Make sure the data is valid
                 if (!$object->checkCsvImport()) {
-                    $this->setError($object->getError());
-                    echo Text::_('COM_JEM_IMPORT_ERROR_CHECK') . $object->getError() . "\n";
+                    $msg = method_exists($object, 'getError') ? ($object->getError() ?? '') : '';
+                    $this->setError($msg ?: Text::_('COM_JEM_IMPORT_ERROR_CHECK'));
+                    echo Text::_('COM_JEM_IMPORT_ERROR_CHECK') . $msg . "\n";
                     continue;
                 }
 
@@ -304,8 +305,12 @@ class JemModelImport extends BaseDatabaseModel
                         // if it fails, it means the record already exists, we can use store().
                         $results = $object->insertIgnore();
                         if ($results < 0) {
+                            try {
                             if (!$object->storeCsvImport()) {
-                                echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $object->getError() . "\n";
+                                    throw new \RuntimeException(Text::_('COM_JEM_IMPORT_ERROR_STORE'));
+                                }
+                            } catch (\RuntimeException $e) {
+                                echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $e->getMessage() . "\n";
                                 $rec['error']++;
                                 $rec['errorids'] .= ($rec['errorids']!=""?',':'') . $row[0];
                                 continue;
@@ -324,8 +329,12 @@ class JemModelImport extends BaseDatabaseModel
                         $rec['ignoredids'] .= ($rec['ignoredids']!=""?',':'') . $row[0];
                     }
                 } else {
+                    try {
                     if (!$object->storeCsvImport()) {
-                        echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $object->getError() . "\n";
+                            throw new \RuntimeException(Text::_('COM_JEM_IMPORT_ERROR_STORE'));
+                        }
+                    } catch (\RuntimeException $e) {
+                        echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $e->getMessage() . "\n";
                         $rec['error']++;
                         $rec['errorids'] .= ($rec['errorids']!=""?',':'') . $row[0];
                         continue;
@@ -336,10 +345,12 @@ class JemModelImport extends BaseDatabaseModel
             } else {
                 // Check/Store of tables other then Category
 
-                // Make sure the data is valid
-                if (!$object->check()) {
-                    $this->setError($object->getError());
-                    echo Text::_('COM_JEM_IMPORT_ERROR_CHECK') . $object->getError() . "\n";
+                // check() throws RuntimeException in J6
+                try {
+                    $object->check();
+                } catch (\RuntimeException $e) {
+                    $this->setError($e->getMessage());
+                    echo Text::_('COM_JEM_IMPORT_ERROR_CHECK') . $e->getMessage() . "\n";
                     $rec['error']++;
                     $rec['errorids'] .= ($rec['errorids']!=""?',':'') . $row[0];
                     continue;
@@ -350,8 +361,10 @@ class JemModelImport extends BaseDatabaseModel
                     // We want to keep id from database so first we try to insert into database.
                     // if it fails, it means the record already exists, we can use store().
                     if (!$object->insertIgnore()) {
-                        if (!$object->store()) {
-                            echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $object->getError() . "\n";
+                        try {
+                            $object->store();
+                        } catch (\RuntimeException $e) {
+                            echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $e->getMessage() . "\n";
                             $rec['error']++;
                             $rec['errorids'] .= ($rec['errorids']!=""?',':'') . $row[0];
                             continue;
@@ -362,8 +375,10 @@ class JemModelImport extends BaseDatabaseModel
                         $rec['added']++;
                     }
                 } else {
-                    if (!$object->store()) {
-                        echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $object->getError() . "\n";
+                    try {
+                        $object->store();
+                    } catch (\RuntimeException $e) {
+                        echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $e->getMessage() . "\n";
                         $rec['error']++;
                         $rec['errorids'] .= ($rec['errorids']!=""?',':'') . $row[0];
                         continue;
@@ -888,10 +903,12 @@ class JemModelImport extends BaseDatabaseModel
             $object = $this->createTable($tablename); // J6: was Table::getInstance
             $object->bind($row, $ignore);
 
-            // Make sure the data is valid
-            if (!$object->check()) {
-                $this->setError($object->getError());
-                echo Text::_('COM_JEM_IMPORT_ERROR_CHECK').$object->getError()."\n";
+            // check() throws RuntimeException in J6
+            try {
+                $object->check();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                echo Text::_('COM_JEM_IMPORT_ERROR_CHECK') . $e->getMessage() . "\n";
                 continue ;
             }
 
@@ -900,8 +917,10 @@ class JemModelImport extends BaseDatabaseModel
                 // We want to keep id from database so first we try to insert into database. if it fails,
                 // it means the record already exists, we can use store().
                 if (!$object->insertIgnore()) {
-                    if (!$object->store()) {
-                        echo Text::_('COM_JEM_IMPORT_ERROR_STORE').$object->getError()."\n";
+                    try {
+                        $object->store();
+                    } catch (\RuntimeException $e) {
+                        echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $e->getMessage() . "\n";
                         $rec['error']++;
                         continue ;
                     } else {
@@ -911,8 +930,10 @@ class JemModelImport extends BaseDatabaseModel
                     $rec['added']++;
                 }
             } else {
-                if (!$object->store()) {
-                    echo Text::_('COM_JEM_IMPORT_ERROR_STORE').$object->getError()."\n";
+                try {
+                    $object->store();
+                } catch (\RuntimeException $e) {
+                    echo Text::_('COM_JEM_IMPORT_ERROR_STORE') . $e->getMessage() . "\n";
                     $rec['error']++;
                     continue ;
                 } else {

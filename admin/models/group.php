@@ -151,14 +151,12 @@ class JemModelGroup extends JemModelAdmin
         $app = Factory::getApplication();
 
         // Make sure the data is valid
-        if (!$table->check()) {
-            $this->setError($table->getError());
+        try {
+            $table->check();
+            $table->store(true);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return;
-        }
-
-        // Store data
-        if (!$table->store(true)) {
-            throw new Exception($table->getError(), 500);
         }
 
         $members = $app->input->get('maintainers', array(), 'array');

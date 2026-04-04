@@ -89,9 +89,11 @@ class JemTableCategory extends Nested
      */
     public function insertIgnore($updateNulls = false)
     {
+        try {
         $ret = $this->_insertIgnoreObject($this->_tbl, $this, $this->_tbl_key);
-        if ($ret < 0) {
-            $this->setError(get_class($this).'::store failed - '.$this->_db->getError());
+        } catch (\RuntimeException $e) {
+            $this->setError(get_class($this) . '::store failed - ' . $e->getMessage());
+            return -1;
         }
         return $ret;
     }
@@ -264,12 +266,8 @@ class JemTableCategory extends Nested
             $stored = $this->_db->insertObject($this->_tbl, $this, $this->_tbl_key);
         }
 
-        // If the store failed return false.
-        if (!$stored) {
-            $e = Text::sprintf('JLIB_DATABASE_ERROR_STORE_FAILED', get_class($this), $stored->getError());
-            $this->setError($e);
-            return false;
-        }
+        // In J6, insertObject/updateObject throw RuntimeException on failure
+        // If we reach here, store succeeded
 
         if ($this->_locked) {
             $this->_unlock();

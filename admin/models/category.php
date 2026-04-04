@@ -295,7 +295,7 @@ class JemModelCategory extends AdminModel
 
         // Bind the data.
         if (!$table->bind($data)) {
-            $this->setError($table->getError());
+            $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
             return false;
         }
 
@@ -305,9 +305,11 @@ class JemModelCategory extends AdminModel
             $table->setRules($rules);
         }
 
-        // Check the data.
-        if (!$table->check()) {
-            $this->setError($table->getError());
+        // Check the data. check() throws RuntimeException in J6.
+        try {
+            $table->check();
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -316,14 +318,15 @@ class JemModelCategory extends AdminModel
         $result = $dispatcher->triggerEvent($this->event_before_save, array($this->option . '.' . $this->name, &$table, $isNew,''));
 
         if (in_array(false, $result, true)) {
-            $this->setError($table->getError());
+            $this->setError(Text::_('COM_JEM_SAVE_FAILED'));
             return false;
         }
 
-        // Store the data.
-        if (!$table->store()) {
-
-            $this->setError($table->getError());
+        // Store the data
+        try {
+            $table->store();
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -331,14 +334,18 @@ class JemModelCategory extends AdminModel
         $dispatcher->triggerEvent($this->event_after_save, array($this->option . '.' . $this->name, &$table, $isNew));
 
         // Rebuild the path for the category:
-        if (!$table->rebuildPath($table->id)) {
-            $this->setError($table->getError());
+        try {
+            $table->rebuildPath($table->id);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
         // Rebuild the paths of the category's children:
-        if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
-            $this->setError($table->getError());
+        try {
+            $table->rebuild($table->id, $table->lft, $table->level, $table->path);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -386,8 +393,10 @@ class JemModelCategory extends AdminModel
         // Get an instance of the table object.
         $table = $this->getTable();
 
-        if (!$table->rebuild()) {
-            $this->setError($table->getError());
+        try {
+            $table->rebuild();
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -412,8 +421,10 @@ class JemModelCategory extends AdminModel
         // Get an instance of the table object.
         $table = $this->getTable();
 
-        if (!$table->saveorder($idArray, $lft_array)) {
-            $this->setError($table->getError());
+        try {
+            $table->saveorder($idArray, $lft_array);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -446,31 +457,29 @@ class JemModelCategory extends AdminModel
 
         // Check that the parent exists
         if ($parentId) {
+            try {
             if (!$table->load($parentId)) {
-                if ($error = $table->getError()) {
-                    // Fatal error
-                    $this->setError($error);
-                    return false;
-                }
-                else {
-                    // Non-fatal error
+                    // Record not found – non-fatal
                     $this->setError(Text::_('JGLOBAL_BATCH_MOVE_PARENT_NOT_FOUND'));
                     $parentId = 0;
                 }
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
             }
-            // Check that user has create permission for parent category
+            if ($parentId) {
             $canCreate = ($parentId == $table->getRootId()) ? $user->authorise('core.create', $extension) : $user->authorise('core.create', $extension . '.category.' . $parentId);
             if (!$canCreate) {
-                // Error since user cannot create in parent category
                 $this->setError(Text::_('COM_CATEGORIES_BATCH_CANNOT_CREATE'));
                 return false;
             }
+        }
         }
 
         // If the parent is 0, set it to the ID of the root item in the tree
         if (empty($parentId)) {
             if (!$parentId = $table->getRootId()) {
-                $this->setError($parentId->getError());
+                $this->setError(Text::_('JLIB_DATABASE_ERROR_TABLE_GET_ROOT_FAILED'));
                 return false;
             }
             // Make sure we can create in root
@@ -489,10 +498,10 @@ class JemModelCategory extends AdminModel
         $query->select('COUNT(id)');
         $query->from($db->quoteName('#__categories'));
         $db->setQuery($query);
+        try {
         $count = $db->loadResult();
-
-        if ($error = $count->getError()) {
-            $this->setError($error);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -505,17 +514,14 @@ class JemModelCategory extends AdminModel
             $table->reset();
 
             // Check that the row actually exists
+            try {
             if (!$table->load($pk)) {
-                if ($error = $table->getError()) {
-                    // Fatal error
-                    $this->setError($error);
-                    return false;
-                }
-                else {
-                    // Not fatal error
                     $this->setError(Text::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
                     continue;
                 }
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
             }
 
             // Copy is a bit tricky, because we also need to copy the children
@@ -562,13 +568,15 @@ class JemModelCategory extends AdminModel
             $table->alias = $alias;
 
             // Store the row.
-            if (!$table->store()) {
-                $this->setError($table->getError());
+            try {
+                $table->store();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
                 return false;
             }
 
             // Get the new item ID
-            $newId = $table->get('id');
+            $newId = $table->id;
 
             // Add the new ID to the array
             $newIds[$i] = $newId;
@@ -580,14 +588,11 @@ class JemModelCategory extends AdminModel
         }
 
         // Rebuild the hierarchy.
-        if (!$table->rebuild()) {
-            $this->setError($table->getError());
-            return false;
-        }
-
-        // Rebuild the tree path.
-        if (!$table->rebuildPath($table->id)) {
-            $this->setError($table->getError());
+        try {
+            $table->rebuild();
+            $table->rebuildPath($table->id);
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -615,18 +620,14 @@ class JemModelCategory extends AdminModel
 
         // Check that the parent exists.
         if ($parentId) {
+            try {
             if (!$table->load($parentId)) {
-                if ($error = $table->getError()) {
-                    // Fatal error
-                    $this->setError($error);
-
-                    return false;
-                }
-                else {
-                    // Non-fatal error
                     $this->setError(Text::_('JGLOBAL_BATCH_MOVE_PARENT_NOT_FOUND'));
                     $parentId = 0;
                 }
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
             }
             // Check that user has create permission for parent category
             $canCreate = ($parentId == $table->getRootId()) ? $user->authorise('core.create', $extension) : $user->authorise('core.create', $extension . '.category.' . $parentId);
@@ -656,17 +657,14 @@ class JemModelCategory extends AdminModel
         foreach ($pks as $pk)
         {
             // Check that the row actually exists
+            try {
             if (!$table->load($pk)) {
-                if ($error = $table->getError()) {
-                    // Fatal error
-                    $this->setError($error);
-                    return false;
-                }
-                else {
-                    // Not fatal error
                     $this->setError(Text::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
                     continue;
                 }
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
             }
 
             // Set the new location in the tree for the node.
@@ -683,15 +681,12 @@ class JemModelCategory extends AdminModel
                 $children = array_merge($children, (array) $db->loadColumn());
             }
 
-            // Store the row.
-            if (!$table->store()) {
-                $this->setError($table->getError());
-                return false;
-            }
-
-            // Rebuild the tree path.
-            if (!$table->rebuildPath()) {
-                $this->setError($table->getError());
+            // Store + rebuild path. Both throw RuntimeException in J6.
+            try {
+                $table->store();
+                $table->rebuildPath();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
                 return false;
             }
         }
@@ -834,9 +829,10 @@ class JemModelCategory extends AdminModel
 
             $this->_db->setQuery($query);
 
-            // TODO: use exception handling
-            if ($this->_db->execute() === false) {
-                $this->setError($this->_db->getError());
+            try {
+                $this->_db->execute();
+            } catch (\RuntimeException $e) {
+                $this->setError($e->getMessage());
                 return false;
             }
         }

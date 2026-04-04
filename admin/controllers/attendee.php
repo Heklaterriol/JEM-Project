@@ -55,7 +55,12 @@ class JemControllerAttendee extends BaseController
         $this->checkToken();
 
         $attendee = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
-        $attendee->bind(Factory::getApplication()->input->post->getArray(/*get them all*/));
+        // bind() returns false but does not throw; checkin() is a separate concern
+        if (!$attendee->bind(Factory::getApplication()->input->post->getArray())) {
+            $this->setMessage(Text::_('COM_JEM_ERROR_BIND_FAILED'), 'error');
+            $this->setRedirect('index.php?option=com_jem&view=attendees&eventid='. Factory::getApplication()->input->getInt('event', 0));
+            return;
+        }
         $attendee->checkin();
 
         $this->setRedirect('index.php?option=com_jem&view=attendees&eventid='. Factory::getApplication()->input->getInt('event', 0));

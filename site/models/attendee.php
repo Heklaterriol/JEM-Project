@@ -188,10 +188,9 @@ class JemModelAttendee extends BaseDatabaseModel
 
         $row = $this->getTable('jem_register', '');
 
-        // bind it to the table
+        // bind() returns false, does not throw RuntimeException
         if (!$row->bind($data)) {
-            // DB errors now thrown as exceptions
-            $this->setError($row->getError());
+            $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
             return false;
         }
 

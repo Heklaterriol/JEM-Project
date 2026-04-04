@@ -155,7 +155,10 @@ class JemModelAttendee extends BaseDatabaseModel
         }
 
         $row = new jem_register(Factory::getContainer()->get('DatabaseDriver'));
-        $row->bind($attendee);
+        if (!$row->bind($attendee)) {
+            $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
+            return false;
+        }
         $row->waiting = ($attendee->waiting || ($attendee->status == 2)) ? 0 : 1;
         if ($row->status == 2) {
             $row->status = 1;
@@ -195,11 +198,9 @@ class JemModelAttendee extends BaseDatabaseModel
             $old_data = clone $row;
         }
 
-        // bind it to the table
-        try {
-            $row->bind($data);
-        } catch (\RuntimeException $e) {
-            Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+        // bind() returns false, does not throw RuntimeException
+        if (!$row->bind($data)) {
+            $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
             return false;
         }
 

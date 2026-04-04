@@ -109,11 +109,13 @@ class JemModelSettings extends AdminModel
 
         // Bind the form fields to the table
         if (!$config->bind($data)) {
-            $this->setError(Text::_('?'));
+            $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
             return false;
         }
-        if (!$config->store()) {
-            $this->setError(Text::_('?'));
+        try {
+            $config->store();
+        } catch (\RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
@@ -127,7 +129,7 @@ class JemModelSettings extends AdminModel
             if (!empty($fields)) {
                 // Bind the form fields to the table
                 if (!$settings->bind($data,'')) {
-                    $this->setError($settings->getError());
+                    $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
                     return false;
                 }
 
@@ -150,7 +152,7 @@ class JemModelSettings extends AdminModel
                 $settings->id = 1;
 
                 if (!$settings->store()) {
-                    $this->setError($settings->getError());
+                    $this->setError(Text::_('COM_JEM_SAVE_FAILED'));
                     return false;
                 }
             }
