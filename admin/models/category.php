@@ -293,7 +293,7 @@ class JemModelCategory extends AdminModel
         }
         $table->color = $color;
 
-        // Bind the data.
+        // Bind the data. bind() returns false, does not throw.
         if (!$table->bind($data)) {
             $this->setError(Text::_('COM_JEM_ERROR_BIND_FAILED'));
             return false;
@@ -322,7 +322,7 @@ class JemModelCategory extends AdminModel
             return false;
         }
 
-        // Store the data
+        // Store the data. store() throws RuntimeException in J6.
         try {
             $table->store();
         } catch (\RuntimeException $e) {
@@ -458,7 +458,7 @@ class JemModelCategory extends AdminModel
         // Check that the parent exists
         if ($parentId) {
             try {
-            if (!$table->load($parentId)) {
+                if (!$table->load($parentId)) {
                     // Record not found – non-fatal
                     $this->setError(Text::_('JGLOBAL_BATCH_MOVE_PARENT_NOT_FOUND'));
                     $parentId = 0;
@@ -468,12 +468,12 @@ class JemModelCategory extends AdminModel
                 return false;
             }
             if ($parentId) {
-            $canCreate = ($parentId == $table->getRootId()) ? $user->authorise('core.create', $extension) : $user->authorise('core.create', $extension . '.category.' . $parentId);
-            if (!$canCreate) {
-                $this->setError(Text::_('COM_CATEGORIES_BATCH_CANNOT_CREATE'));
-                return false;
+                $canCreate = ($parentId == $table->getRootId()) ? $user->authorise('core.create', $extension) : $user->authorise('core.create', $extension . '.category.' . $parentId);
+                if (!$canCreate) {
+                    $this->setError(Text::_('COM_CATEGORIES_BATCH_CANNOT_CREATE'));
+                    return false;
+                }
             }
-        }
         }
 
         // If the parent is 0, set it to the ID of the root item in the tree
@@ -499,7 +499,7 @@ class JemModelCategory extends AdminModel
         $query->from($db->quoteName('#__categories'));
         $db->setQuery($query);
         try {
-        $count = $db->loadResult();
+            $count = $db->loadResult();
         } catch (\RuntimeException $e) {
             $this->setError($e->getMessage());
             return false;
@@ -515,7 +515,7 @@ class JemModelCategory extends AdminModel
 
             // Check that the row actually exists
             try {
-            if (!$table->load($pk)) {
+                if (!$table->load($pk)) {
                     $this->setError(Text::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
                     continue;
                 }
@@ -621,7 +621,7 @@ class JemModelCategory extends AdminModel
         // Check that the parent exists.
         if ($parentId) {
             try {
-            if (!$table->load($parentId)) {
+                if (!$table->load($parentId)) {
                     $this->setError(Text::_('JGLOBAL_BATCH_MOVE_PARENT_NOT_FOUND'));
                     $parentId = 0;
                 }
@@ -658,7 +658,7 @@ class JemModelCategory extends AdminModel
         {
             // Check that the row actually exists
             try {
-            if (!$table->load($pk)) {
+                if (!$table->load($pk)) {
                     $this->setError(Text::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
                     continue;
                 }

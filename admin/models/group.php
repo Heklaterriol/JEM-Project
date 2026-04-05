@@ -151,6 +151,7 @@ class JemModelGroup extends JemModelAdmin
         $app = Factory::getApplication();
 
         // Make sure the data is valid
+        // check() and store() throw RuntimeException in J6
         try {
             $table->check();
             $table->store(true);

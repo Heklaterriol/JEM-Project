@@ -306,7 +306,7 @@ class JemModelImport extends BaseDatabaseModel
                         $results = $object->insertIgnore();
                         if ($results < 0) {
                             try {
-                            if (!$object->storeCsvImport()) {
+                                if (!$object->storeCsvImport()) {
                                     throw new \RuntimeException(Text::_('COM_JEM_IMPORT_ERROR_STORE'));
                                 }
                             } catch (\RuntimeException $e) {
@@ -330,7 +330,7 @@ class JemModelImport extends BaseDatabaseModel
                     }
                 } else {
                     try {
-                    if (!$object->storeCsvImport()) {
+                        if (!$object->storeCsvImport()) {
                             throw new \RuntimeException(Text::_('COM_JEM_IMPORT_ERROR_STORE'));
                         }
                     } catch (\RuntimeException $e) {
